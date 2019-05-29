@@ -27,7 +27,7 @@ Login Account related fuctionally can be access using `Context`'s [Extension fun
 Creates a new record for the model
 
 **Request**
-```kotlinlang
+```kotlin
 Odoo.create(model = "rest.partner", values = mapOf(
         "name" to "example", "email" to "example@example.com"
 ))  {
