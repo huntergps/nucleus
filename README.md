@@ -32,7 +32,7 @@ Odoo.create(model = "rest.partner", values = mapOf(
         "name" to "example", "email" to "example@example.com"
 ))  {
     onSubscribe {
-      // Disponsable
+      // Disposable
     }
     onNext {
       // Response
@@ -62,13 +62,13 @@ Reads the requested fields for the records
 Odoo.read(model = "res.partner", ids = listOf(1, 3), fields = listOf("id", "name", "email"))
     {
     onSubscribe {
-      // Disponsable
+      // Disposable
     }
     onNext {
       // Response
     }
     onError {
-      // Your code
+      // Deal the error
     }
     onComplete {
       // Your code
