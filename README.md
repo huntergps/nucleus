@@ -27,10 +27,10 @@ Login Account related fuctionally can be access using `Context`'s [Extension fun
 Creates a new record for the model
 
 **Request**
-```kotlin
-Odoo.create(
-  // Your code
-  ) {
+```kotlinlang
+Odoo.create(model = "rest.partner", values = mapOf(
+        "name" to "example", "email" to "example@example.com"
+))  {
     onSubscribe {
       // Disponsable
     }
@@ -59,9 +59,8 @@ Reads the requested fields for the records
 
 **Request**
 ```kotlin
-Odoo.read(
-  // Your code
-  ) {
+Odoo.read(model = "res.partner", ids = listOf(1, 3), fields = listOf("id", "name", "email"))
+    {
     onSubscribe {
       // Disponsable
     }
