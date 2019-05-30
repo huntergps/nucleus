@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+
+        <variable
+            name="pricelist"
+            type="com.domatix.yevbes.nucleus.sales.entities.ProductPricelist" />
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/default_8dp"
+        android:paddingBottom="@dimen/default_8dp">
+
+        <TextView
+            android:id="@+id/listItemRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@{UtilsKt.trimFalse(pricelist.displayName)}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            tools:text="General" />
+    </LinearLayout>
+</layout>

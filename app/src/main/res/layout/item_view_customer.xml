@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+
+        <import type="android.view.View" />
+
+        <import type="com.google.gson.JsonElement" />
+
+        <variable
+            name="customer"
+            type="com.domatix.yevbes.nucleus.customer.entities.Customer" />
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:paddingTop="@dimen/default_8dp"
+        android:paddingBottom="@dimen/default_8dp">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageSmall"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            app:image_small="@{UtilsKt.trimFalse(customer.imageSmall)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:name="@{UtilsKt.trimFalse(customer.name)}"
+            tools:src="@mipmap/ic_launcher_round" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="@{customer.companyId.isJsonPrimitive ? @dimen/default_16dp : @dimen/default_4dp}"
+            android:layout_marginBottom="8dp"
+            android:text="@{UtilsKt.trimFalse(customer.name)}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            app:layout_constraintBottom_toTopOf="@+id/email"
+            app:layout_constraintStart_toEndOf="@+id/company_name"
+            tools:text="Aliasgar Vadivala" />
+
+        <TextView
+            android:id="@+id/company_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="@{UtilsKt.trimFalse(UtilsKt.jsonElementToString(customer.companyId))+`,`}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:visibility="@{customer.companyId.isJsonPrimitive ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toTopOf="@+id/email"
+            app:layout_constraintStart_toEndOf="@+id/imageSmall"
+            tools:text="YourCompany" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="@dimen/default_8dp"
+            android:paddingStart="0dp"
+            android:paddingEnd="56dp"
+            android:singleLine="true"
+            android:text="@{UtilsKt.trimFalse(customer.email)}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:layout_constraintStart_toEndOf="@+id/imageSmall"
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            tools:text="charlie.barnard@wealthyandsons.example.com" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
