@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".sales.fragments.SaleOrderProfileFragment">
+
+    <data>
+
+        <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+
+        <variable
+            name="stateString"
+            type="String" />
+
+        <variable
+            name="termsString"
+            type="String" />
+
+        <variable
+            name="dateOrderString"
+            type="String" />
+
+        <variable
+            name="amountUntaxedString"
+            type="String" />
+
+        <variable
+            name="amountTaxString"
+            type="String" />
+
+        <variable
+            name="amountTotalString"
+            type="String" />
+
+        <variable
+            name="saleOrderObj"
+            type="com.domatix.yevbes.nucleus.sales.entities.SaleOrder" />
+    </data>
+    <!--<android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tb"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>-->
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tb"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <!-- TODO: Update blank fragment layout -->
+
+            <android.support.v4.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:id="@+id/name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:gravity="center_horizontal"
+                                android:text="@{saleOrderObj.name}"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:typeface="normal"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_chainStyle="spread"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:text="SO052 " />
+
+
+                            <TextView
+                                android:id="@+id/date_order_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/date_order"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+                            <TextView
+                                android:id="@+id/date_order"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:text="@{dateOrderString}"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toEndOf="@+id/date_order_label"
+                                app:layout_constraintTop_toTopOf="@+id/date_order_label"
+                                tools:text="8 dic. 2018" />
+
+                            <TextView
+                                android:id="@+id/state_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="16dp"
+                                android:gravity="end"
+                                android:text="@string/stage"
+                                app:layout_constraintEnd_toStartOf="@+id/state"
+                                app:layout_constraintTop_toTopOf="@+id/date_order" />
+
+                            <TextView
+                                android:id="@+id/state"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_green"
+                                android:gravity="end|center_vertical"
+                                android:paddingLeft="5dp"
+                                android:paddingRight="5dp"
+                                android:paddingBottom="3dp"
+                                android:text="@{stateString}"
+                                android:textColor="@android:color/background_light"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="@+id/state_label"
+                                tools:text="Quotation" />
+                        </android.support.constraint.ConstraintLayout>
+                    </android.support.v7.widget.CardView>
+
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:id="@+id/partner_id_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/customer"
+                                app:layout_constraintHorizontal_chainStyle="spread"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/partner_id"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:gravity="end"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.partnerId)}"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toStartOf="@+id/partner_id_label"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_id_label"
+                                tools:text="Domatix" />
+
+                            <TextView
+                                android:id="@+id/partner_invoice_address_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/invoice_address"
+                                app:layout_constraintStart_toStartOf="@+id/partner_id"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_id" />
+
+                            <TextView
+                                android:id="@+id/partner_invoice_address"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:gravity="end|center_vertical"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.partnerInvoiceId)}"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toStartOf="@+id/partner_invoice_address_label"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address_label"
+                                tools:text="Domatix" />
+
+                            <TextView
+                                android:id="@+id/partner_shipping_address_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/shipping_address"
+                                app:layout_constraintStart_toStartOf="@+id/partner_invoice_address"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address" />
+
+                            <TextView
+                                android:id="@+id/partner_shipping_address"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.partnerShippingId)}"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toStartOf="@+id/partner_shipping_address_label"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_shipping_address_label"
+                                tools:text="Domatix" />
+
+                            <View
+                                android:id="@+id/divider4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="8dp"
+                                android:background="?android:attr/dividerHorizontal"
+                                app:layout_constraintStart_toStartOf="@+id/partner_id"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_id" />
+
+                            <View
+                                android:id="@+id/divider5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="8dp"
+                                android:background="?android:attr/listDivider"
+                                app:layout_constraintStart_toStartOf="@+id/partner_invoice_address"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address" />
+
+                        </android.support.constraint.ConstraintLayout>
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/saleOrderLineRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:orientation="horizontal"
+                        android:scrollbars="vertical" />
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp">
+
+
+                            <TextView
+                                android:id="@+id/amount_untaxed_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:gravity="end"
+                                android:text="@string/amount_untaxed"
+                                app:layout_constraintEnd_toStartOf="@+id/amount_untaxed"
+                                app:layout_constraintHorizontal_chainStyle="spread"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/amount_untaxed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:gravity="end"
+                                android:text="@{amountUntaxedString}"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:text="1544,90" />
+
+                            <TextView
+                                android:id="@+id/amount_tax_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/amount_tax"
+                                app:layout_constraintEnd_toEndOf="@+id/amount_untaxed_label"
+                                app:layout_constraintTop_toBottomOf="@+id/amount_untaxed_label" />
+
+                            <TextView
+                                android:id="@+id/amount_tax"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:gravity="end|center_vertical"
+                                android:text="@{amountTaxString}"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="@+id/amount_untaxed"
+                                app:layout_constraintTop_toBottomOf="@+id/amount_untaxed"
+                                tools:text="114,42" />
+
+                            <TextView
+                                android:id="@+id/total_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/amount_total"
+                                app:layout_constraintEnd_toEndOf="@+id/amount_tax_label"
+                                app:layout_constraintTop_toBottomOf="@+id/amount_tax_label" />
+
+                            <TextView
+                                android:id="@+id/total"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@{amountTotalString}"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="@+id/amount_tax"
+                                app:layout_constraintTop_toBottomOf="@+id/amount_tax"
+                                tools:text="659,32" />
+
+                            <TextView
+                                android:id="@+id/terms"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="16dp"
+                                android:hint="@string/terms"
+                                android:text="@{termsString}"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/total_label" />
+
+                            <View
+                                android:id="@+id/divider"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="8dp"
+                                android:background="?android:attr/listDivider"
+                                app:layout_constraintEnd_toEndOf="@+id/amount_tax"
+                                app:layout_constraintStart_toStartOf="@+id/amount_tax_label"
+                                app:layout_constraintTop_toBottomOf="@+id/amount_tax_label" />
+
+                        </android.support.constraint.ConstraintLayout>
+                    </android.support.v7.widget.CardView>
+
+                </LinearLayout>
+            </android.support.v4.widget.NestedScrollView>
+
+
+        </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" /-->
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_contact_search"
+        android:orderInCategory="100"
+        android:title="@string/action_search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/action_filter"
+        android:enabled="false"
+        android:icon="@drawable/ic_filter"
+        android:orderInCategory="200"
+        android:title="@string/action_filter"
+        android:visible="false"
+        app:showAsAction="ifRoom">
+
+        <!-- "Filter" submenu -->
+        <menu>
+            <group android:id="@+id/groupFilter">
+                <item
+                    android:id="@+id/action_filter_companies"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="@string/action_filter_companies" />
+
+                <item
+                    android:id="@+id/action_filter_persons"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="@string/action_filter_persons" />
+
+                <item
+                    android:id="@+id/action_filter_customers"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="@string/action_filter_customers" />
+
+                <item
+                    android:id="@+id/action_filter_suppliers"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="@string/action_filter_suppliers" />
+            </group>
+        </menu>
+
+    </item>
+</menu>

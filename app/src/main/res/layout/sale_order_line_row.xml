@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="productIdString"
+            type="String" />
+
+        <variable
+            name="productDescString"
+            type="String" />
+
+        <variable
+            name="qtyString"
+            type="String" />
+
+        <variable
+            name="priceUnitString"
+            type="String" />
+
+        <variable
+            name="subtotalString"
+            type="String" />
+
+        <variable
+            name="groupDiscountPerSoLine"
+            type="Boolean" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/discount_label"
+                android:layout_width="wrap_content"
+                android:layout_height="17dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/discount"
+                android:visibility="@{groupDiscountPerSoLine ? View.VISIBLE : View.GONE}"
+                app:layout_constraintStart_toEndOf="@+id/price_unit_label"
+                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+            <TextView
+                android:id="@+id/discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="@{groupDiscountPerSoLine ? View.VISIBLE : View.GONE}"
+                app:layout_constraintStart_toStartOf="@+id/discount_label"
+                app:layout_constraintTop_toBottomOf="@+id/discount_label"
+                tools:text="10.0" />
+
+            <TextView
+                android:id="@+id/product_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textStyle="bold"
+                android:text="@{productIdString}"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="[0ABE25] Botella 250 ml. Aceite Oliva Virgen Extra 100% BORGES" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{productDescString}"
+                app:layout_constraintStart_toStartOf="@+id/product_id"
+                app:layout_constraintTop_toBottomOf="@+id/product_id"
+                tools:text="[0ABE25] Botella 250 ml. Aceite Oliva Virgen Extra 100% BORGES" />
+
+            <TextView
+                android:id="@+id/qty_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="@+id/name"
+                app:layout_constraintTop_toBottomOf="@+id/name"
+                android:text="@string/quantity" />
+
+            <TextView
+                android:id="@+id/qty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{qtyString}"
+                app:layout_constraintStart_toStartOf="@+id/qty_label"
+                app:layout_constraintTop_toBottomOf="@+id/qty_label"
+                tools:text="10.0" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toBottomOf="@+id/qty"
+                app:layout_constraintStart_toEndOf="@+id/qty_label"
+                app:layout_constraintTop_toTopOf="@+id/qty_label" />
+
+            <TextView
+                android:id="@+id/price_unit_label"
+                android:layout_width="wrap_content"
+                android:layout_height="17dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toEndOf="@+id/divider2"
+                app:layout_constraintTop_toBottomOf="@+id/name"
+                android:text="@string/unit_price" />
+
+            <TextView
+                android:id="@+id/price_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{priceUnitString}"
+                app:layout_constraintStart_toStartOf="@+id/price_unit_label"
+                app:layout_constraintTop_toBottomOf="@+id/price_unit_label"
+                tools:text="20,50" />
+
+            <TextView
+                android:id="@+id/subtotal_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name"
+                android:text="@string/subtotal" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toBottomOf="@+id/price_unit"
+                app:layout_constraintEnd_toStartOf="@+id/subtotal_label"
+                app:layout_constraintStart_toEndOf="@+id/discount_label"
+                app:layout_constraintTop_toTopOf="@+id/price_unit_label" />
+
+            <TextView
+                android:id="@+id/subtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{subtotalString}"
+                tools:text="105,50"
+                app:layout_constraintEnd_toEndOf="@+id/subtotal_label"
+                app:layout_constraintTop_toBottomOf="@+id/subtotal_label" />
+
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+</layout>

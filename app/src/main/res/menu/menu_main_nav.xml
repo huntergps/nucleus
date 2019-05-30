@@ -1,0 +1,160 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- My design -->
+
+    <group
+        android:id="@+id/nav_menu_5"
+        android:checkableBehavior="single"
+        android:visible="true">
+
+        <!--item
+            android:id="@+id/nav_debate"
+            android:icon="@drawable/ic_debate"
+            android:title="@string/action_debate" /-->
+
+        <item
+            android:id="@+id/nav_contacts"
+            android:icon="@drawable/ic_contact"
+            android:title="@string/action_contacts" />
+
+        <item
+            android:id="@+id/nav_sales"
+            android:icon="@drawable/ic_notes"
+            android:title="@string/action_sales" />
+    </group>
+
+    <group
+        android:id="@+id/nav_general_group"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_inventory_selectable"
+            android:icon="@drawable/ic_dashboard_black_24dp"
+            android:title="@string/group_menu_sga_inventory_closed" />
+    </group>
+
+
+    <item
+        android:id="@+id/nav_menu_inventory"
+        android:title="@string/group_menu_sga_inventory"
+        android:visible="false">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <!--item
+                    android:id="@+id/nav_hours_parts"
+                    android:icon="@drawable/ic_hours_parts"
+                    android:title="@string/action_hours_parts" /-->
+                <item
+                    android:id="@+id/nav_dashboard_inventory"
+                    android:icon="@drawable/ic_dashboard_black_24dp"
+                    android:title="@string/action_dashboard_inventory" />
+
+                <item
+                    android:id="@+id/nav_sga"
+                    android:icon="@drawable/ic_store"
+                    android:title="@string/action_store" />
+
+                <item
+                    android:id="@+id/nav_inventory_tools"
+                    android:icon="@drawable/ic_settings"
+                    android:title="@string/action_inventory_tools" />
+
+                <item
+                    android:id="@+id/nav_inventory_transference"
+                    android:icon="@drawable/ic_transfer"
+                    android:title="@string/action_inventory_transference" />
+
+                <item
+                    android:id="@+id/nav_inventory_picking"
+                    android:icon="@drawable/ic_picking"
+                    android:title="@string/action_inventory_picking"
+                    android:visible="false" />
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/nav_menu_6"
+        android:title="@string/group_menu_time_management"
+        android:visible="true">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <!--item
+                    android:id="@+id/nav_hours_parts"
+                    android:icon="@drawable/ic_hours_parts"
+                    android:title="@string/action_hours_parts" /-->
+                <item
+                    android:id="@+id/nav_activities"
+                    android:icon="@drawable/ic_activities"
+                    android:title="@string/action_activities" />
+            </group>
+        </menu>
+    </item>
+
+    <group
+        android:id="@+id/nav_menu_7"
+        android:checkableBehavior="none"
+        android:visible="false">
+        <item android:title="@string/group_menu_settings">
+            <menu>
+                <item
+                    android:id="@+id/nav_settings"
+                    android:icon="@drawable/ic_settings"
+                    android:visible="true"
+                    android:title="@string/action_settings" />
+                <item
+                    android:id="@+id/nav_profile"
+                    android:icon="@drawable/ic_profile"
+                    android:title="@string/action_profile" />
+                <item
+                    android:id="@+id/nav_help"
+                    android:icon="@drawable/ic_help"
+                    android:title="@string/action_help" />
+            </menu>
+        </item>
+    </group>
+
+
+    <!--group
+ <grouuuu   android:id="@+id/nav_menu_4"
+        android:checkableBehavior="none"
+        android:visible="false">
+        <item android:title="@string/group_menu_account_management">
+            <menu>
+                <item
+                    android:id="@+id/nav_add_account"
+                    android:icon="@drawable/ic_add_account"
+                    android:title="@string/action_add_account" />
+                <item
+                    android:id="@+id/nav_manage_account"
+                    android:icon="@drawable/ic_manage_account"
+                    android:title="@string/action_manage_account" />
+            </menu>
+        </item>
+    </group--><!-- ______________________________________________________ -->
+
+    <!--group
+        android:id="@+id/nav_menu_1"
+
+        android:checkableBehavior="none">
+        <item android:title="Example">
+            <menu>
+                <item
+                    android:id="@+id/nav_customer"
+                    android:icon="@drawable/ic_people_black_24dp"
+                    android:title="@string/action_customer" />
+                <item
+                    android:id="@+id/nav_supplier"
+                    android:icon="@drawable/ic_local_shipping_black_24dp"
+                    android:title="@string/action_supplier" />
+                <item
+                    android:id="@+id/nav_company"
+                    android:icon="@drawable/ic_location_city_black_24dp"
+                    android:title="@string/action_company" />
+            </menu>
+        </item>
+    </group-->
+
+</menu>

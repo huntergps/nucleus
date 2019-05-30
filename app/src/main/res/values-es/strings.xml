@@ -1,0 +1,436 @@
+<resources>
+    <string name="app_name">Nucleus</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancelar</string>
+    <string name="fatal_error">Fatal Error</string>
+    <string name="generic_error">Algo ha ido mal!</string>
+    <string name="operation_failed">Operación Fallida</string>
+    <string name="try_again">Intentalo de nuevo</string>
+    <string name="quit">Dejar</string>
+    <string name="odoo_error">Error en el Servidor</string>
+    <string name="exit">Salir</string>
+    <string name="action_dashboard">Tablero</string>
+    <string name="action_customer">Clientes</string>
+    <string name="action_supplier">Proveedores</string>
+    <string name="action_company">Empresa</string>
+    <string name="action_messaging">Mensajería</string>
+    <string name="action_new_chat">Nueva conversación</string>
+
+    <!-- My design -->
+    <!-- Main group -->
+    <string name="action_debate">Debate</string>
+    <string name="action_contacts">Contactos</string>
+    <string name="action_expense_tracker">Expense Tracker</string>
+    <string name="action_store">Productos</string>
+    <string name="action_dashboard_inventory">Tablero del Inventario</string>
+    <string name="action_dashboard_inventory_opened">Tablero del Inventario &#032; &#032; &#032; &#9650;</string>
+    <string name="action_dashboard_inventory_closed">Tablero del Inventario &#032; &#032; &#032; &#9660;</string>
+    <string name="action_notes">Notes</string>
+    <string name="action_sales">Ventas</string>
+    <string name="action_tables">Tables</string>
+    <string name="action_finance">Finance</string>
+
+    <!-- Time management group -->
+    <string name="group_menu_time_management">Gestión del tiempo</string>
+    <string name="action_hours_parts">Parts of hours</string>
+    <string name="action_activities">Actividades</string>
+
+    <!-- Settings group -->
+    <string name="group_menu_settings">Ajustes</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_profile">Perfil</string>
+    <string name="action_help">Acerca de</string>
+
+    <!-- Invisible account management group -->
+    <string name="group_menu_account_management">Administración de cuentas</string>
+    <string name="action_add_account">Añadir cuenta</string>
+    <string name="action_manage_account">Administrar cuentas</string>
+
+    <!-- Menu items -->
+    <string name="action_filter">Filtrar</string>
+    <string name="action_search">Buscar</string>
+
+    <string name="action_filter_companies">Compañías</string>
+    <string name="action_filter_persons">Personas</string>
+    <string name="action_filter_customers">Clientes</string>
+    <string name="action_filter_suppliers">Proveedores</string>
+
+    <string name="action_customer_profile_share">Compartir</string>
+    <string name="action_customer_profile_edit">Editar</string>
+    <string name="action_customer_profile_refresh">Actualizar</string>
+
+    <string name="action_customer_profile_import">Importar</string>
+
+    <string name="action_customer_profile_edit_save">Guardar</string>
+    <string name="action_customer_profile_edit_cancel">Cancelar</string>
+
+    <string name="action_filter_activities_late">Tarde</string>
+    <string name="action_filter_activities_today">Hoy</string>
+    <string name="action_filter_activities_future">Futuro</string>
+
+    <string name="action_activities_sort_type">Tipo</string>
+    <string name="action_activities_sort_date">Fecha</string>
+
+    <!-- Filter conditions -->
+    <string name="action_filter_companies_param">is_company</string>
+    <string name="action_filter_persons_param" >is_company</string>
+    <string name="action_filter_customers_param" >customer</string>
+    <string name="action_filter_suppliers_param" >supplier</string>
+
+    <!-- Customer Profile Information -->
+    <string name="customer_profile_website">SITIO WEB</string>
+    <string name="customer_profile_email">CORREO</string>
+    <string name="customer_profile_country">PAÍS</string>
+    <string name="customer_profile_phone">TELÉFONO</string>
+    <string name="customer_profile_mobile">MÓVIL</string>
+    <string name="customer_profile_comment">NOTA INTERNA</string>
+    <string name="customer_profile_company_name">NOMBRE DE EMPRESA</string>
+    <string name="customer_profile_full_address">DIRECCIÓN</string>
+    <string name="customer_profile_state">ESTADO</string>
+    <string name="customer_profile_city">CIUDAD</string>
+    <string name="customer_profile_street">CALLE</string>
+    <string name="customer_profile_street2">CALLE2</string>
+    <string name="customer_profile_zip">CP</string>
+    <string name="city">Ciudad</string>
+    <string name="street">Calle</string>
+    <string name="street2">Calle2</string>
+    <string name="zip">CP</string>
+    <string name="company">Empresa</string>
+    <string name="is_company">Es compañía</string>
+    <string name="web">Web</string>
+    <string name="email">Correo</string>
+    <string name="phone">Teléfono</string>
+    <string name="mobile">Móvil</string>
+    <string name="country">País</string>
+    <string name="note">Nota</string>
+    <string name="state">Estado</string>
+    <string name="full_address">Dirección</string>
+    <string name="no_country">Ningún país seleccionado</string>
+    <string name="search_country">Buscar país</string>
+    <string name="no_company">Sin compañía</string>
+
+    <string name="explain_permissions">Necesitas dar algunos permisos obligatorios para continuar. ¿Quieres ir a la configuración de la aplicación?</string>
+    <string name="explain_permissions_title">Se requieren permisos de servicio para esta aplicación</string>
+    <string name="explain_permissions_positive_button">Se requieren permisos de servicio para esta aplicación</string>
+    <string name="explain_permissions_negative_button">Se requieren permisos de servicio para esta aplicación</string>
+
+    <string name="ok_positive_button">OK</string>
+    <string name="cancel_negative_button">Cancelar</string>
+
+    <string name="pick_setup_title">Elegir la foto</string>
+    <string name="pick_setup_camera">Cámara</string>
+    <string name="pick_setup_gallery">Galería</string>
+    <string name="pick_setup_cancel">Cancelar</string>
+    <string name="pick_setup_progress">Cargando…</string>
+
+    <string name="base64_full_transparent_no_translate">data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gsaCyoCUhzUJgAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAA+SURBVHja7cExAQAAAMKg9U9tCy+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACApwGcpAAB2HscXgAAAABJRU5ErkJggg==</string>
+
+    <string name="toast_changes_saved">Cambios guardados correctamente</string>
+
+    <!-- AlertDialog -->
+    <string name="dialog_title">Atención!</string>
+    <string name="dialog_message">Si sales, perderás todos los cambios introducidos. ¿Realmente desea salir?</string>
+    <string name="dialog_positive_button">Ok</string>
+    <string name="dialog_negative_button">Cancelar</string>
+    <!-- ___________________________ -->
+
+
+    <!-- Activities Fragment -->
+    <string name="summary_activities">Resumen</string>
+    <string name="activity_activities">Actividad</string>
+    <string name="document_activities">Documento</string>
+    <string name="date_activities">Fecha</string>
+    <string name="model_activities">Modelo</string>
+    <!-- ___________________________ -->
+
+
+    <string name="action_login_other_account">Administrar otras cuentas</string>
+    <string name="manage_account_remove_error">Error al eliminar la cuenta</string>
+    <string name="profile_full_name">Nombre:- N/A</string>
+    <string name="profile_email">Correo:- N/A</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_exit">Presione de nuevo para salir</string>
+    <string name="login_protocol">Protocolo</string>
+    <string name="login_host_hint">Host (ej. odoo.example.com)</string>
+    <string name="login_host_error">Por favor, escriba la URL del host</string>
+    <string name="login_check_odoo_version">Conectarse al Servidor</string>
+    <string name="login_checking_odoo_version">Conectandose al Servidor&#8230;</string>
+    <string name="login_server_success">Odoo version %s es compatible</string>
+    <string name="login_server_error">Odoo version %s es incompatible</string>
+    <string name="login_username_hint">Usuario (e.g. user@odoo.com)</string>
+    <string name="login_username_error">Por favor, escriba su nombre de usuario</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="login_password_error">Por favor, escriba la contraseña</string>
+    <string name="login_database_hint">Base de datos</string>
+    <string name="login_database_error">Por favor, seleccione la base de datos</string>
+    <string name="login_credential_error">Usuario / Contraseña Errónea</string>
+    <string name="login_submit">Iniciar sesión</string>
+    <string name="login_progress">Autenticando&#8230;</string>
+    <string name="login_success">Creando cuenta de usuario&#8230;</string>
+    <string name="login_create_account_error">Algo salió mal al crear cuenta de usuario</string>
+    <string name="error_active_user">No se ha encontrado ningún usuario activo!</string>
+    <string name="profile_name">Nombre</string>
+    <string name="profile_login">Usuario</string>
+    <string name="profile_server_url">URL del Servidor</string>
+    <string name="profile_database">Base de datos</string>
+    <string name="profile_odoo_version">Odoo Versión</string>
+    <string name="profile_timezone">Zona horaria</string>
+    <string name="preference_build_category">Versión Info</string>
+    <string name="preference_build_key">compilación</string>
+    <string name="preference_build_title">Versión de Compilación</string>
+    <string name="preference_build_summary">Versión %s</string>
+    <string name="preference_about_category">Acerca de</string>
+    <string name="preference_organization_key">organización</string>
+    <string name="preference_organization_title">Desarrollado por</string>
+    <string name="preference_privacy_policy_key">privacidad</string>
+    <string name="preference_privacy_policy_title">Política de privacidad</string>
+    <string name="preference_contact_key">contacto</string>
+    <string name="preference_contact_title">Contáctenos</string>
+    <string name="preference_prompt_email_intent">Enviar correo electrónico utilizando</string>
+    <string name="preference_error_email_intent">No se ha encontrado ninguna aplicación para abrir enlaces de correo electrónico.</string>
+    <string name="recycler_empty_title">Lista vacía.</string>
+    <string name="recycler_error_retry">Intentar de nuevo</string>
+
+    <!-- Network Connection Strings BEGIN -->
+    <string name="network_alert_title">Conexión a Internet desactivada</string>
+    <string name="network_alert_message">Activar la conexión a internet</string>
+    <string name="create_account_error">%s no se pudo crear la cuenta debido a %s. Por favor, cierre la sesión y vuelva a iniciar sesión</string>
+    <string name="no_channel">No se ha encontrado ningún canal en el sistema.</string>
+    <!-- Network Connection Strings END -->
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="country_list">Países</string>
+    <string name="company_list">Compañías</string>
+    <string name="search_company">Buscar compañía</string>
+    <string name="action_sort">Ordenar por</string>
+    <string name="todo">POR HACER</string>
+
+
+    <string name="undo">DESHACER</string>
+    <string name="today">hoy</string>
+
+
+    <!-- SALES -->
+    <string name="quotation">Presupuesto</string>
+    <string name="quotation_sent">Presupuesto enviado</string>
+    <string name="sale_order">Pedido de ventas</string>
+    <string name="order_done">Bloqueado</string>
+    <string name="order_canceled">Cancelado</string>
+    <string name="amount_untaxed">Base imponible:</string>
+    <string name="amount_tax">Impuestos:</string>
+    <string name="amount_total">Total:</string>
+    <string name="date_order">Fecha</string>
+    <string name="stage">Etapa</string>
+    <string name="customer">Cliente</string>
+    <string name="invoice_address">Dirección de factura</string>
+    <string name="shipping_address">Dirección de entrega</string>
+    <string name="quantity">Cantidad</string>
+    <string name="unit_price">Precio de unidad</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="terms">Términos y Condiciones</string>
+
+
+    <!--Filters-->
+    <string name="action_filter_sales_user_id">Mis ventas</string>
+
+    <string name="check">Hecho</string>
+
+    <!-- DatePicker -->
+    <string name="title_pickers">Obtener la fecha</string>
+
+    <string name="date_format">dd/mm/yyyy</string>
+    <string name="time_format">hh:mm</string>
+
+    <!-- Vista formulario pedidos de venta -->
+    <string name="form_sales_subject">Asunto</string>
+    <string name="form_date_of_sale">Fecha de venta</string>
+    <string name="form_pick_date">Fecha de recogida</string>
+    <string name="form_choose_customer">Elija un cliente</string>
+    <string name="form_choose_billing_address">Elija la dirección de facturación</string>
+    <string name="form_choose_delivery_address">Elija la dirección de entrega</string>
+    <string name="billing_address">Dirección de facturación</string>
+    <string name="delivery_address">Dirección de entrega</string>
+    <string name="terms_and_conditions">Términos y Condiciones</string>
+    <string name="amount_without_taxes">Importe sin impuestos:</string>
+    <string name="amount_taxes">Impuestos:</string>
+    <string name="add_line_items">Añadir un elemento</string>
+    <string name="search">Buscar</string>
+    <string name="pricelist">Tarifa</string>
+    <string name="form_choose_pricelist">Elija la tarifa</string>
+
+    <!-- Quantity Dialog -->
+    <string name="quantity_dialog_title">Cantidad</string>
+    <string name="quantity_dialog_positive_button">OK</string>
+    <string name="quantity_dialog_negative_button">Cancelar</string>
+    <string name="action_add">Añadir líneas de venta</string>
+    <string name="title_activity_customer_list">CustomerListActivity</string>
+
+    <!-- -->
+    <string name="order_added">Pedido agregado correctamente</string>
+    <string name="fail_order_no_customer">Ningún cliente seleccionado</string>
+    <string name="action_edit">Modificar</string>
+    <string name="action_confirm">Confirmar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="product_image">Imagen del producto</string>
+    <string name="product">Producto</string>
+    <string name="udm">UdM</string>
+    <string name="discount">Descuento (%)</string>
+    <string name="taxes">Impuestos</string>
+    <string name="description">Descripción</string>
+    <string name="search_product">Buscar producto por nombre</string>
+    <string name="sale_order_confirmed">Orden de venta confirmada</string>
+    <string name="select_time">Seleccione tiempo</string>
+    <string name="order_line_manager_title">Manager de líneas del pedido</string>
+    <string name="no_products_find">No hay productos encontrados!</string>
+
+    <!-- Shared Prefs No translate it -->
+    <string name="preference_fle_key_res_config_settings">com.domatix.yevbes.nucleus.RES_CONFIG_SETTINGS</string>
+    <string name="saved_group_discount_per_so_line">saved_group_discount_per_so_line</string>
+    <string name="saved_use_sale_note">saved_use_sale_note</string>
+    <string name="saved_sale_note">saved_sale_note</string>
+    <!-- -->
+
+    <string name="remove_sale_order_line">Eliminar línea del pedido</string>
+    <string name="select_action">Selecciona la acción</string>
+    <string name="adding_sale_order_dialog_title">Añadiendo pedido de venta</string>
+    <string name="please_wait_dialog_message">Por favor espera…</string>
+    <string name="applying_changes_sale_order_dialog_title">Aplicando cambios al pedido de venta.</string>
+    <string name="action_filter_budgets">Presupuestos</string>
+    <string name="action_filter_budgets_sent">Presupuestos enviados</string>
+    <string name="action_filter_sales">Ventas</string>
+    <string name="group_menu_sga_inventory">Inventario</string>
+    <string name="group_menu_sga_inventory_closed">Inventario &#160; &#160; &#160; &#9660;</string>
+    <string name="action_inventory_tools">Ajustes de Inventario</string>
+    <string name="action_inventory_transference">Transferencias</string>
+    <string name="action_inventory_picking">Preparación de Pedidos</string>
+    <string name="detail_transfer">Detalle de Transferencia</string>
+    <string name="action_options_stockmove">Movimiento de </string>
+    <string name="add_product">Añadir Producto</string>
+    <string name="initial_demand">Demanda inicial</string>
+    <string name="done">Hecho</string>
+    <string name="reserved">Reservado</string>
+    <string name="edit_move_line">Movimiento de stock</string>
+
+    <string-array name="record_code">
+        <item>Para recibir</item>
+        <item>Por hacer</item>
+        <item>Transferencias</item>
+    </string-array>
+
+    <!-- SAT -->
+    <string name="action_worksheet">Orden de trabajo</string>
+    <string name="action_filter_my_work_parts_title">Mis partes de trabajo</string>
+    <string name="worksheet_state_draft">Borrador</string>
+    <string name="worksheet_state_cancel">Cancelado</string>
+    <string name="worksheet_state_confirmed">Confirmado</string>
+    <string name="worksheet_state_ready">Listo</string>
+    <string name="worksheet_state_done">Hecho</string>
+    <string name="worksheet_state_invoice_except">En factura</string>
+    <string name="worksheet_state_under_repaired">Bajo reparación</string>
+    <string name="worksheet_state_to_be_invoiced">A facturar</string>
+    <string name="worksheet_details_lbl">Formulario de orden de trabajo</string>
+    <string name="tab_title_pieces">Piezas</string>
+    <string name="tab_title_operations">Operaciones</string>
+    <string name="tab_title_time_tracking">Seguimiento del tiempo</string>
+    <string name="tab_title_notes">Notas</string>
+    <string name="tab_title_signature">Firma</string>
+    <string name="planification_start">Fecha de planificacion</string>
+    <string name="product_to_be_repaired">Producto a reparar</string>
+    <string name="maintenance_type">Tipo de mantenimiento</string>
+    <string name="client">Cliente</string>
+    <string name="address">Dirección</string>
+    <string name="category">Categoría</string>
+    <string name="responsible">Responsable</string>
+    <string name="maintenance_type_none">Ninguno</string>
+    <string name="maintenance_type_corrective">Correctivo</string>
+    <string name="maintenance_type_preventive">Preventivo</string>
+    <string name="context_menu_maintenance_title">Seleccione el tipo de mantenimiento</string>
+    <string name="operations_product">Producto</string>
+    <string name="operations_quantity">Cantidad</string>
+    <string name="signature_name">Nombre *</string>
+    <string name="signature_date">Fecha</string>
+    <string name="sign_here">Firma aquí</string>
+    <string name="signature_clear">Limpiar</string>
+    <string name="signature_submit">Enviar</string>
+    <string name="start_time">Hora de inicio*</string>
+    <string name="finish_time">Hora de final*</string>
+    <string name="duration">Duración</string>
+    <string name="location_origin">Ubicación de origen</string>
+    <string name="location_destination">Ubicación de destino</string>
+    <string name="add_new_element_pieces">Añadir nuevo elemento</string>
+    <string name="add_piece_type">Tipo</string>
+    <string name="add_piece">Añadir</string>
+
+    <string name="add_piece_type_dialog">Tipo *</string>
+    <string name="add_piece_product_dialog">Producto *</string>
+    <string name="add_piece_description_dialog">Descripción *</string>
+    <string name="add_piece_origin_location_dialog">Ubicación de origen *</string>
+    <string name="add_piece_destination_location_dialog">Ubicación de destino *</string>
+    <string name="add_piece_quantity_dialog">Cantidad *</string>
+    <string name="add_piece_unit_price_dialog">Precio unitario *</string>
+    <string name="add_piece_title">Añadir pieza</string>
+    <string name="piece_lot_serial_number">Lote / número de serie</string>
+    <string name="remove_piece_title">Quitar pieza</string>
+    <string name="required_fields">Los campos requeridos están vacíos</string>
+    <string name="dialog_signature_operations">No hay operaciones! ¿Realmente quieres continuar?</string>
+    <string name="lot_serial_number">Número de serie del lote</string>
+    <string name="guarantee_limit">Vencimiento de la garantía</string>
+    <string name="required_time_tracking">Tiempo de seguimiento requerido! Por favor, especifique tiempo inicial y final.</string>
+    <string name="network_connection_check" >Por favor revise la conexión a internet</string>
+    <string name="validation_completed">Validación completada satisfactoriamente</string>
+    <string name="stock_move">Movimientos de stock</string>
+    <string name="detailed_operations">Operaciones detalladas</string>
+    <string name="immediate_transfer_dialog_title">¿Transferencia Inmediata?</string>
+    <string name="alert_message_immediate_transfer">No ha ingresado cantidades hechas, haciendo clic en aplicar Odoo procesará todas las cantidades reservadas. </string>
+    <string name="apply">Aplicar</string>
+    <string name="no_create_partial_delivery_button">No crear entrega parcial</string>
+    <string name="create_partial_delivery">Crear entrega parcial</string>
+    <string name="partial_delivery_dialog_title">Crear entrega parcial?</string>
+    <string name="alert_message_one_partial_delivery">Ha procesado menos productos que la demanda inicial.</string>
+    <string name="alert_message_two_partial_delivery">Crear entrega parcial, si espera procesar los productos restantes más tarde. \nNo crear entrega parcial si no espera el resto de productos.</string>
+    <string name="attention">Atención!</string>
+    <string name="alert_message_no_reserved_done_qty">No puede validar una transferencia si no ha procesado ninguna cantidad. Deberías cancelar la transferencia.</string>
+    <string name="odoo">Odoo</string>
+    <string name="alert_message_over_processed_transfer"> Ha procesado más de lo que inicialmente se pleaneó para algún producto. \n¿Seguro que quiere validar esta operación? </string>
+    <string name="lot_serial_number_stock_move_line">Lote/Número de serie</string>
+    <string name="details_product">Detalles del producto</string>
+    <string name="product_info">Información</string>
+    <string name="product_pucharse">Adquisición</string>
+    <string name="product_purchase_method">Método de compra:</string>
+    <string name="product_supply">Método de suministro:</string>
+    <string name="product_cost">Precio de coste:</string>
+    <string name="product_quantity">Cantidad total:</string>
+    <string name="product_type">Tipo de producto:</string>
+    <string name="product_barcode">Código de barras:</string>
+    <string name="product_sale_price">Precio de venta:</string>
+    <string name="product_reference">Referencia:</string>
+    <string name="product_type_product">Producto almacenable</string>
+    <string name="product_type_service">Servicio</string>
+    <string name="product_type_consu">Consumible</string>
+    <string name="tomorrow">Mañana</string>
+    <string name="before_day">Ayer</string>
+    <string name="duration_activ">Duración:</string>
+    <string name="start_time_lbl">Fecha de inicio</string>
+    <string name="finish_time_lbl">Fecha final</string>
+    <string name="duration_time_lbl">Duración</string>
+    <string name="user_lbl">Usuario</string>
+    <string name="info_domatix_com">info@domatix.com</string>
+    <string name="released_under_mit">Released under MIT license</string>
+    <string name="copyright_symbol">©</string>
+    <string name="domatix">Domatix</string>
+    <string name="year">2018-2019.</string>
+    <string name="description_about">Nucleus is a software to develop easily, natively and fast Odoo features into Android devices.</string>
+    <string name="nuclius_version">v 2019.05.27</string>
+    <string name="by_domatix">by Domatix</string>
+    <!-- -->
+
+    <!-- Configuration -->
+    <string name="english_language">Inglés</string>
+    <string name="spanish_language">Español</string>
+    <string name="set_default_language_text">Selecciona el lenguaje deseado:</string>
+    <string name="choose_customer">Por favor elija un cliente</string>
+    <!-- -->
+</resources>

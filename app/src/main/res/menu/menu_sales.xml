@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:icon="@drawable/ic_filter"
+        android:orderInCategory="200"
+        android:title="@string/action_filter"
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <item
+                android:id="@+id/action_filter_my_sales"
+                android:checkable="true"
+                android:checked="true"
+                android:title="@string/action_filter_sales_user_id" />
+
+            <item
+                android:id="@+id/action_filter_budgets"
+                android:checkable="true"
+                android:checked="false"
+                android:title="@string/action_filter_budgets" />
+
+            <item
+                android:id="@+id/action_filter_budgets_sent"
+                android:checkable="true"
+                android:checked="false"
+                android:title="@string/action_filter_budgets_sent" />
+
+            <item
+                android:id="@+id/action_filter_sales"
+                android:checkable="true"
+                android:checked="false"
+                android:title="@string/action_filter_sales" />
+        </menu>
+
+    </item>
+    <item
+        android:id="@+id/action_sales_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView"/>
+</menu>

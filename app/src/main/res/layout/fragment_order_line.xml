@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".sales.fragments.OrderLineFragment">
+
+    <data>
+        <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+        <import type="java.lang.Float" />
+
+        <variable
+            name="productProduct"
+            type="com.domatix.yevbes.nucleus.products.entities.ProductProduct" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView11"
+            android:layout_width="520dp"
+            android:layout_height="119dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/product_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_no_camara" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textProductContainer"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:minWidth="100dp"
+            android:scrollbars="horizontal"
+            app:hintAnimationEnabled="false"
+            app:hintEnabled="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView11">
+
+            <EditText
+                android:id="@+id/product"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:hint="@string/product"
+                android:inputType="none"
+                android:scrollbars="horizontal"
+                android:text="@{productProduct.name}"
+                android:textSize="12sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textQuantityContainer"
+            android:layout_width="103dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+
+            android:scrollbars="vertical"
+            app:hintAnimationEnabled="false"
+            app:hintEnabled="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textProductContainer">
+
+            <EditText
+                android:id="@+id/quantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/quantity"
+                android:inputType="numberSigned|numberDecimal"
+                android:maxLines="1"
+                android:scrollbars="vertical"
+                android:textSize="12sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textDiscountContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:maxLines="1"
+            android:minWidth="100dp"
+            android:scrollbars="vertical"
+            app:hintAnimationEnabled="false"
+            app:hintEnabled="true"
+            app:layout_constraintStart_toEndOf="@+id/textQuantityContainer"
+            app:layout_constraintTop_toTopOf="@+id/textQuantityContainer">
+
+            <EditText
+                android:id="@+id/discount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/discount"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="1"
+                android:scrollbars="vertical"
+                android:textSize="12sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textUnitPriceContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:scrollbars="vertical"
+            app:hintAnimationEnabled="false"
+            app:hintEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/textQuantityContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textQuantityContainer">
+
+            <EditText
+                android:id="@+id/unitPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/unit_price"
+                android:inputType="numberSigned|numberDecimal"
+                android:maxLines="1"
+                android:scrollbars="vertical"
+                android:textSize="12sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/taxesLinearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textUnitPriceContainer">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/textTaxesContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:minWidth="70dp"
+                android:scrollbars="vertical"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="true">
+
+                <EditText
+                    android:id="@+id/taxes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/taxes"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:scrollbars="vertical"
+                    android:textSize="12sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textDescriptionContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:minWidth="70dp"
+            android:scrollbars="vertical"
+            app:hintAnimationEnabled="false"
+            app:hintEnabled="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/taxesLinearLayout">
+
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/description"
+                android:inputType="textMultiLine|textCapSentences"
+                android:scrollbars="vertical"
+                android:textSize="12sp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
