@@ -141,11 +141,11 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
 
-        if (mAdapter.rowItemCount == 0) {
+     /*   if (mAdapter.rowItemCount == 0) {
             mAdapter.showMore()
             //fetchSales()
-            fetchSales(activeFilters)
-        }
+//            fetchSales(activeFilters)
+        }*/
 
         binding.fabAddButton.alpha = 0.80f
 
@@ -154,7 +154,6 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         binding.salesRecyclerView.adapter = mAdapter
-
     }
 
     override fun onStart() {
