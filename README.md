@@ -7,14 +7,11 @@
 
 Nucleus is a Odoo Json RPC client for Android. This RPC let you to adapt some Odoo module to Android in a simple way.
 
-<p float="left">
-<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/sales.png"  alt="sale image example" width="200"/>
+<p style="text-align: center;">
 
-<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/contactos-1.png" alt="contacts image example" width="200"/>
-
-<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/Peek%2028-05-2019%2012-34.gif" alt="gif refresh example" width="200"/>
-
-<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/Peek%2028-05-2019%2012-36.gif" alt="activity done example" width="200"/>
+<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/sales.png"  alt="sale image example" width="250"/>
+&emsp;
+<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/contactos-1.png" alt="contacts image example" width="250"/>
 </p>
 
 ## How to use
@@ -31,7 +28,7 @@ Creates a new record for the model
 
 **Request**
 ```kotlin
-Odoo.create(model = "rest.partner", values = mapOf(
+Odoo.create(model = "res.partner", values = mapOf(
         "name" to "example", "email" to "example@example.com"
 ))  {
     onSubscribe {
@@ -95,6 +92,11 @@ Odoo.read(model = "res.partner", ids = listOf(1, 3), fields = listOf("id", "name
     ]
   }
 ```
+<p style="text-align: center;">
+<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/Peek%2028-05-2019%2012-34.gif" alt="gif refresh example" width="250"/>
+&emsp;
+<img src="https://raw.githubusercontent.com/miguel-domatix/nucleus/master/android/doc/Peek%2028-05-2019%2012-36.gif" alt="activity done example" width="250"/>
+</p>
 
 ## Used libraries
 
