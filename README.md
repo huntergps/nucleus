@@ -28,7 +28,7 @@ Creates a new record for the model
 
 **Request**
 ```kotlin
-Odoo.create(model = "rest.partner", values = mapOf(
+Odoo.create(model = "res.partner", values = mapOf(
         "name" to "example", "email" to "example@example.com"
 ))  {
     onSubscribe {
