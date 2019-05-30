@@ -1,6 +1,9 @@
 # nucleus
 [![API](https://img.shields.io/badge/API-17%2B-%234CC93C.svg)](https://android-arsenal.com/api?level=17)
-[![API](https://img.shields.io/apm/l/vim-mode.svg)](http://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![API](https://img.shields.io/badge/Made%20with-Kotlin-blue.svg)
+![API](https://img.shields.io/badge/State-In%20progress-orange.svg)
+
 
 Nucleus is a Odoo Json RPC client for Android. This RPC let you to adapt some Odoo module to Android in a simple way.
 
@@ -93,7 +96,7 @@ Odoo.read(model = "res.partner", ids = listOf(1, 3), fields = listOf("id", "name
   }
 ```
 
-## Library used
+## Used libraries
 
 - RxJava
 - Retrofit
