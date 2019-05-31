@@ -24,6 +24,7 @@ import com.domatix.yevbes.nucleus.databinding.FragmentOrderEditBinding
 import com.domatix.yevbes.nucleus.products.entities.ProductProduct
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
+import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.OrderLinesAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
@@ -107,7 +108,7 @@ class OrderEditFragment : Fragment() {
     lateinit var compositeDisposable: CompositeDisposable private set
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
-    lateinit var activity: MainActivity private set
+    lateinit var activity: SaleDetailActivity private set
 
     private var saleOrder: SaleOrder? = null
 
@@ -239,14 +240,14 @@ class OrderEditFragment : Fragment() {
             startActivityForResult(intent, OrderEditFragment.REQUEST_CODE)
         }
 
-        activity = getActivity() as MainActivity
+        activity = getActivity() as SaleDetailActivity
         activity.setTitle(R.string.action_sales)
         activity.binding.abl.visibility = View.GONE
         activity.binding.nsv.visibility = View.GONE
 
         activity.setSupportActionBar(binding.tb)
         val actionBar = activity.supportActionBar
-        if (actionBar != null) {
+      /*  if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true)
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
@@ -257,7 +258,7 @@ class OrderEditFragment : Fragment() {
         drawerToggle = ActionBarDrawerToggle(activity, activity.binding.dl,
                 binding.tb, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         activity.binding.dl.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()
+        drawerToggle.syncState()*/
 
         setOnClickListeners(binding)
 
@@ -272,14 +273,14 @@ class OrderEditFragment : Fragment() {
     }
 
     override fun onStart() {
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
+//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
         super.onStart()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.dispose()
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
+//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
     }
 
     private fun setOnClickListeners(binding: FragmentOrderEditBinding) {

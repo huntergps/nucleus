@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.FragmentSaleOrderProfileBinding
+import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.SaleOrderLineDataAdapter
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrderLine
@@ -67,7 +68,7 @@ class SaleOrderProfileFragment : Fragment() {
     lateinit var compositeDisposable: CompositeDisposable private set
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
-    lateinit var activity: MainActivity private set
+    lateinit var activity: SaleDetailActivity private set
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,30 +96,39 @@ class SaleOrderProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 //        representSaleOrderData()
-        activity = getActivity() as MainActivity
+        activity = getActivity() as SaleDetailActivity
 
         val mLayoutManager = LinearLayoutManager(context)
         binding.saleOrderLineRecyclerView.layoutManager = mLayoutManager
         binding.saleOrderLineRecyclerView.itemAnimator = DefaultItemAnimator()
         mAdapter.setupScrollListener(binding.saleOrderLineRecyclerView)
 
-        activity.setTitle(R.string.action_sales)
+
+//        activity.setTitle(R.string.action_sales)
+        activity.title = getString(R.string.sale_name_title,saleOrder.name)
+
         activity.binding.abl.visibility = View.GONE
         activity.binding.nsv.visibility = View.GONE
 
         activity.setSupportActionBar(binding.tb)
         val actionBar = activity.supportActionBar
+
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.tb.setNavigationOnClickListener {
+            activity.onBackPressed()
+        }
+      /*  val actionBar = activity.supportActionBar
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true)
             actionBar.setDisplayHomeAsUpEnabled(true)
-        }
+        }*/
 
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
+        /*activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
 
         drawerToggle = ActionBarDrawerToggle(activity, activity.binding.dl,
                 binding.tb, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         activity.binding.dl.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()
+        drawerToggle.syncState()*/
     }
 
     private fun representSaleOrderData() {
@@ -150,14 +160,14 @@ class SaleOrderProfileFragment : Fragment() {
 
     override fun onStart() {
         updateSaleOrder()
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
+//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
         super.onStart()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.dispose()
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
+//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
         mAdapter.clear()
     }
 

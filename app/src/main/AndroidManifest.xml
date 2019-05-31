@@ -19,7 +19,7 @@
         android:required="true" />
 
     <application
-        android:name="com.domatix.yevbes.nucleus.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -27,47 +27,42 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name="com.domatix.yevbes.nucleus.about.AboutActivity"
+        <activity
+            android:name=".sales.activities.SaleDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".about.AboutActivity"
             android:label="@string/action_help"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity"
+            android:name=".sales.activities.PricelistListActivity"
             android:label="@string/pricelist"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.sga.view.ui.ProductDetailsActivity"
+            android:name=".sga.view.ui.ProductDetailsActivity"
             android:label="@string/details_product"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.sat.presentation.view.activity.GeneralAdapterActivity"
+            android:name=".sga.view.ui.EditProductActivity"
             android:label="@string/detailed_operations"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.sat.presentation.view.activity.WorkSheetDetailActivity"
-            android:label="@string/worksheet_details_lbl"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.domatix.yevbes.nucleus.sga.view.ui.EditProductActivity"
-            android:label="@string/detailed_operations"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.domatix.yevbes.nucleus.sga.view.ui.DetailEditTransferActivity"
+            android:name=".sga.view.ui.DetailEditTransferActivity"
             android:label="@string/stock_move"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.sga.view.ui.DetailTransferActivity"
+            android:name=".sga.view.ui.DetailTransferActivity"
             android:label="@string/detail_transfer"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -76,12 +71,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.domatix.yevbes.nucleus.core.authenticator.LoginActivity"
+            android:name=".core.authenticator.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.core.authenticator.SplashActivity"
+            android:name=".core.authenticator.SplashActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.Immersive.Splash">
@@ -92,23 +87,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.domatix.yevbes.nucleus.core.authenticator.ProfileActivity"
+            android:name=".core.authenticator.ProfileActivity"
             android:label="@string/action_profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.core.authenticator.ManageAccountActivity"
+            android:name=".core.authenticator.ManageAccountActivity"
             android:label="@string/action_manage_account"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.core.preferences.SettingsActivity"
+            android:name=".core.preferences.SettingsActivity"
             android:label="@string/action_settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name="com.domatix.yevbes.nucleus.core.authenticator.AuthenticatorService"
+            android:name=".core.authenticator.AuthenticatorService"
             android:enabled="true"
             android:exported="true"
             tools:ignore="ExportedService">
@@ -122,17 +117,17 @@
         </service>
 
         <activity
-            android:name="com.domatix.yevbes.nucleus.customer.CustomerProfileActivity"
+            android:name=".customer.CustomerProfileActivity"
             android:label="@string/action_profile"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.country.CountryListActivity"
+            android:name=".country.CountryListActivity"
             android:label="@string/country_list"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.company.CompanyListActivity"
+            android:name=".company.CompanyListActivity"
             android:label="@string/company_list"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -149,21 +144,21 @@
         </provider>
 
         <activity
-            android:name="com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity"
+            android:name=".sales.activities.OrderLineListActivity"
             android:label="@string/action_sales"
-            android:parentActivityName="com.domatix.yevbes.nucleus.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity"
+            android:name=".sales.customer.CustomerListActivity"
             android:label="@string/customer"
-            android:parentActivityName="com.domatix.yevbes.nucleus.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity"
+            android:name=".sales.activities.OrderLineManagerActivity"
             android:label="@string/action_sales"
-            android:parentActivityName="com.domatix.yevbes.nucleus.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

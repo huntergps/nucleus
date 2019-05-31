@@ -227,6 +227,8 @@
 
 
     <!-- SALES -->
+    <string name="sale_name_title">Sale %1$s</string>
+    <string name="new_sale">New sale</string>
     <string name="quotation">Quotation</string>
     <string name="quotation_sent">Quotation sent</string>
     <string name="sale_order">Sale Order</string>

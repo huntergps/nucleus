@@ -214,6 +214,8 @@
 
 
     <!-- SALES -->
+    <string name="sale_name_title">Venta %1$s</string>
+    <string name="new_sale">Nueva venta</string>
     <string name="quotation">Presupuesto</string>
     <string name="quotation_sent">Presupuesto enviado</string>
     <string name="sale_order">Pedido de ventas</string>

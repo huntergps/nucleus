@@ -7,15 +7,16 @@ import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.utils.recycler.RecyclerBaseAdapter
 import com.domatix.yevbes.nucleus.databinding.SaleOrderRowBinding
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
-import com.domatix.yevbes.nucleus.sales.fragments.SaleOrderProfileFragment
 import com.domatix.yevbes.nucleus.sales.fragments.SalesFragment
+import com.domatix.yevbes.nucleus.sales.interfaces.ItemClickListener
 import com.google.gson.Gson
 import timber.log.Timber
 import java.util.*
 
 class SalesDataAdapter(
         val fragment: SalesFragment,
-        items: ArrayList<Any>
+        items: ArrayList<Any>,
+        val listener: ItemClickListener
 ) : RecyclerBaseAdapter(items, fragment.binding.salesRecyclerView) {
 
 
@@ -64,6 +65,9 @@ class SalesDataAdapter(
                         parent,
                         false
                 )
+                binding.root.setOnClickListener {
+                    listener.onItemClick(it)
+                }
                 return SalesViewHolder(binding)
             }
         }
@@ -98,25 +102,6 @@ class SalesDataAdapter(
                 binding.amountTotalString = amountTotal
                 binding.stateString = state
                 binding.nameString = name
-
-                if (!binding.root.hasOnClickListeners()) {
-                    binding.root.setOnClickListener {
-                        val clickedPosition = holder.adapterPosition
-                        val clickedItem = items[clickedPosition] as SaleOrder
-
-                        val saleOrderGson = Gson()
-                        val saleOrderGsonAsAString = saleOrderGson.toJson(clickedItem)
-
-                        val saleOrderProfileFragment = SaleOrderProfileFragment.newInstance(saleOrderGsonAsAString)
-
-                        fragment.fragmentManager!!.beginTransaction()
-                                .replace(R.id.clMain, saleOrderProfileFragment, SaleOrderProfileFragment.SALE_ORDER_PROFILE_FRAG_TAG)
-                                .addToBackStack(null)
-                                .commit()
-
-                        Timber.v(String.format("%s : %s", clickedPosition, clickedItem.name))
-                    }
-                }
             }
         }
     }

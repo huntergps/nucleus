@@ -59,12 +59,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var navHeader: NavHeaderViewHolder
     private var doubleBackToExitPressedOnce = false
-    private var groupDiscountPerSoLine: Boolean = false
-
-    private var useSaleNote: Boolean = false
     private var currentDrawerItemID: Int = 0
     private var drawerClickStatus: Boolean = false
-    private var saleNote: String? = null
 
     /*private val customerFragment: CustomerFragment by lazy {
         CustomerFragment.newInstance(CustomerFragment.Companion.CustomerType.Customer)
@@ -112,10 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharePref = getSharedPreferences(getString(R.string.preference_fle_key_res_config_settings), Context.MODE_PRIVATE)
-        sharePref.edit().clear().apply()
         app = application as App
-        getSaleSettings()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
     }
 
@@ -440,148 +433,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getGroupDiscountPerSoLine(): Boolean {
-        return groupDiscountPerSoLine
-    }
 
 
-    private fun getSaleSettings() {
-        Odoo.callKw(model = "res.users", method = "has_group", args = listOf("sale.group_discount_per_so_line")) {
-            onNext { response ->
-                if (response.isSuccessful) {
-                    val callKw = response.body()!!
-                    if (callKw.isSuccessful) {
-                        val result = callKw.result
-                        groupDiscountPerSoLine = result.asJsonPrimitive.asBoolean
-                    } else {
-                        // Odoo specific error
-                        Timber.w("callkw() failed with ${callKw.errorMessage}")
-                    }
-                } else {
-                    Timber.w("request failed with ${response.code()}:${response.message()}")
-                }
-            }
 
-            onError { error ->
-                error.printStackTrace()
-            }
 
-            onComplete {
-                val sharePref = getSharedPreferences(getString(R.string.preference_fle_key_res_config_settings), Context.MODE_PRIVATE)
-                val editor = sharePref.edit()
-                editor.putBoolean(getString(R.string.saved_group_discount_per_so_line), groupDiscountPerSoLine)
-                editor.apply()
-            }
-        }
-
-        Odoo.callKw(model = "ir.config_parameter", method = "get_param", args = listOf("sale.use_sale_note")) {
-            onNext { response ->
-                if (response.isSuccessful) {
-                    val callKw = response.body()!!
-                    if (callKw.isSuccessful) {
-                        val result = callKw.result
-                        useSaleNote = result.asJsonPrimitive.asBoolean
-                    } else {
-                        // Odoo specific error
-                        Timber.w("callkw() failed with ${callKw.errorMessage}")
-                    }
-                } else {
-                    Timber.w("request failed with ${response.code()}:${response.message()}")
-                }
-            }
-
-            onError { error ->
-                error.printStackTrace()
-            }
-
-            onComplete {
-                val sharePref = getSharedPreferences(getString(R.string.preference_fle_key_res_config_settings), Context.MODE_PRIVATE)
-                val editor = sharePref.edit()
-                editor.putBoolean(getString(R.string.saved_use_sale_note), useSaleNote)
-                editor.apply()
-
-                if (useSaleNote) {
-                    var result: AuthenticateResult? = null
-
-                    Odoo.getSessionInfo {
-                        onNext { response ->
-                            if (response.isSuccessful) {
-                                val getSessionInfo = response.body()!!
-                                if (getSessionInfo.isSuccessful) {
-                                    result = getSessionInfo.result
-                                    // ...
-                                } else {
-                                    // Odoo specific error
-                                    Timber.w("getSessionInfo() failed with ${getSessionInfo.errorMessage}")
-                                }
-                            } else {
-                                Timber.w("request failed with ${response.code()}:${response.message()}")
-                            }
-                        }
-
-                        onError { error ->
-                            error.printStackTrace()
-                        }
-
-                        onComplete {
-                            Odoo.searchRead(model = "res.company", domain = listOf(listOf("id", '=', result!!.companyId)), fields = listOf("sale_note")) {
-                                onNext { response ->
-                                    if (response.isSuccessful) {
-                                        val callKw = response.body()!!
-                                        if (callKw.isSuccessful) {
-                                            val res = callKw.result.records.asJsonArray[0].asJsonObject.get("sale_note").asString
-                                            saleNote = res
-                                        } else {
-                                            // Odoo specific error
-                                            Timber.w("callkw() failed with ${callKw.errorMessage}")
-                                        }
-                                    } else {
-                                        Timber.w("request failed with ${response.code()}:${response.message()}")
-                                    }
-                                }
-
-                                onError { error ->
-                                    error.printStackTrace()
-                                }
-
-                                onComplete {
-                                    val sharePref = getSharedPreferences(getString(R.string.preference_fle_key_res_config_settings), Context.MODE_PRIVATE)
-                                    val editor = sharePref.edit()
-                                    editor.putString(getString(R.string.saved_sale_note), saleNote)
-                                    editor.apply()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Odoo.callKw(model = "res.company", method = "read", args = listOf("sale_note")) {
-            onNext { response ->
-                if (response.isSuccessful) {
-                    val callKw = response.body()!!
-                    if (callKw.isSuccessful) {
-                        val result = callKw.result
-                        val ok = result
-                    } else {
-                        // Odoo specific error
-                        Timber.w("callkw() failed with ${callKw.errorMessage}")
-                    }
-                } else {
-                    Timber.w("request failed with ${response.code()}:${response.message()}")
-                }
-            }
-
-            onError { error ->
-                error.printStackTrace()
-            }
-
-            onComplete {
-
-            }
-        }
-    }
 
 
 /*override fun onBackPressed() {

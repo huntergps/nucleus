@@ -27,6 +27,7 @@ import com.domatix.yevbes.nucleus.products.entities.ProductProduct
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
 import com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity
+import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.AddOrderLinesAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
 import com.domatix.yevbes.nucleus.sales.entities.ProductPricelist
@@ -81,7 +82,7 @@ class AddSaleFragment : Fragment() {
     private var partnerInvoiceId: Int? = null
     private var partnerShippingId: Int? = null
     private lateinit var drawerToggle: ActionBarDrawerToggle
-    lateinit var activity: MainActivity private set
+    lateinit var activity: SaleDetailActivity private set
     lateinit var binding: FragmentAddSaleBinding private set
     lateinit var compositeDisposable: CompositeDisposable private set
     lateinit var selectedOrderLines: ArrayList<SaleOrderLine> private set
@@ -100,7 +101,6 @@ class AddSaleFragment : Fragment() {
                 val bundle = Bundle()
                 val aux = ArrayList<SaleOrderLine>()
                 aux.addAll(selectedOrderLines)
-
 
                 bundle.putString(OrderLineManagerActivity.SELECTED_LIST, gson.toJson(aux))
                 bundle.putInt(OrderLineManagerActivity.SELECTED_LIST_POSITION, position)
@@ -147,7 +147,7 @@ class AddSaleFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        activity = getActivity() as MainActivity
+        activity = getActivity() as SaleDetailActivity
 
         // get Shared Preferences value
         val sharedPref = activity.getSharedPreferences(getString(R.string.preference_fle_key_res_config_settings), Context.MODE_PRIVATE)
@@ -157,12 +157,19 @@ class AddSaleFragment : Fragment() {
             binding.termsConditions.text = SpannableStringBuilder(saleNote)
 
         //activity.binding.tb.title = getString(R.string.action_sales)
-        activity.setTitle(R.string.action_sales)
+//        activity.setTitle(R.string.action_sales)
+        activity.setTitle(R.string.new_sale)
         activity.binding.abl.visibility = View.GONE
         activity.binding.nsv.visibility = View.GONE
 
         activity.setSupportActionBar(binding.tb)
         val actionBar = activity.supportActionBar
+
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.tb.setNavigationOnClickListener {
+            activity.onBackPressed()
+        }
+        /*val actionBar = activity.supportActionBar
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true)
             actionBar.setDisplayHomeAsUpEnabled(true)
@@ -173,7 +180,7 @@ class AddSaleFragment : Fragment() {
         activity.binding.dl.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
 
-        activity.binding.dl.addDrawerListener(drawerToggle)
+        activity.binding.dl.addDrawerListener(drawerToggle)*/
 
         binding.buttonAddOrderSalesLine.setOnClickListener {
             if (idCustomer != null) {
@@ -353,7 +360,7 @@ class AddSaleFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
+//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
     }
 
     private fun getUnitPrice(tarifId: Int, productId: Int, quantity: Float, listener: GetTarifaInterface) {
@@ -563,7 +570,7 @@ class AddSaleFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
+//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
         compositeDisposable.dispose()
     }
 

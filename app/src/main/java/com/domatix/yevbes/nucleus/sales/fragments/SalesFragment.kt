@@ -1,6 +1,6 @@
 package com.domatix.yevbes.nucleus.sales.fragments
 
-
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,9 +13,12 @@ import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.core.Odoo.user
 import com.domatix.yevbes.nucleus.databinding.FragmentSalesBinding
+import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.SalesDataAdapter
 import com.domatix.yevbes.nucleus.sales.entities.ResConfigSettings
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
+import com.domatix.yevbes.nucleus.sales.interfaces.ItemClickListener
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable
 
@@ -34,7 +37,9 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
         private var actualBoolean: Boolean? = true
 
         private const val TYPE = "type"
+        const val SALE_ORDER = "SALE_ORDER"
         private var flag: Boolean = false
+        const val SALE_TYPE = "SALE_TYPE"
 
         fun newInstance(activityType: SalesType) =
                 SalesFragment().apply {
@@ -55,11 +60,22 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var salesType: SalesType
     private var filterGroup: Int = 0
     private var filterGroupSales: Boolean = true
-
     private val limit = RECORD_LIMIT
 
     val mAdapter: SalesDataAdapter by lazy {
-        SalesDataAdapter(this, arrayListOf())
+        SalesDataAdapter(this, arrayListOf(), object : ItemClickListener {
+            override fun onItemClick(view: View) {
+                val clickedPosition = binding.salesRecyclerView.getChildAdapterPosition(view)
+                val clickedItem = mAdapter.items[clickedPosition] as SaleOrder
+
+                val saleOrderGson = Gson()
+                val saleOrderGsonAsAString = saleOrderGson.toJson(clickedItem)
+                val intent = Intent(activity,SaleDetailActivity::class.java)
+                intent.putExtra(SALE_ORDER,saleOrderGsonAsAString)
+                intent.putExtra(SaleDetailActivity.FRAGMENT_TYPE,SaleDetailActivity.Companion.FragmentType.DetailFragment)
+                startActivity(intent)
+            }
+        })
     }
 
     lateinit var activity: MainActivity private set
@@ -429,8 +445,6 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
-
-
     private fun fetchSalesFilter(param1: String?, param2: Any?) {
         Odoo.searchRead("sale.order", SaleOrder.fields,
                 listOf(
@@ -492,12 +506,9 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun floatingActionButtonAddPressed() {
-        val addSaleFragment = AddSaleFragment.newInstance()
-
-        fragmentManager!!.beginTransaction()
-                .replace(R.id.clMain, addSaleFragment, AddSaleFragment.ADD_SALE_FRAG_TAG)
-                .addToBackStack(null)
-                .commit()
+        val intent = Intent(activity,SaleDetailActivity::class.java)
+        intent.putExtra(SaleDetailActivity.FRAGMENT_TYPE,SaleDetailActivity.Companion.FragmentType.AddFragment)
+        startActivity(intent)
     }
 
 }
