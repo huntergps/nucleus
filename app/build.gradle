@@ -103,4 +103,5 @@ dependencies {
     implementation 'com.github.gcacace:signature-pad:1.2.1'
     implementation 'com.robertlevonyan.view:CustomFloatingActionButton:2.1.1'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.airbnb.android:lottie:2.5.0'
 }

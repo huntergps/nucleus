@@ -510,5 +510,4 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
         intent.putExtra(SaleDetailActivity.FRAGMENT_TYPE,SaleDetailActivity.Companion.FragmentType.AddFragment)
         startActivity(intent)
     }
-
 }

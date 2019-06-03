@@ -188,7 +188,6 @@ class SaleOrderProfileFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item != null) {
             when (item.itemId) {

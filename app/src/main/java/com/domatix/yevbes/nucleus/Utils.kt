@@ -301,6 +301,10 @@ fun saleStates(receiveString: String, fragment: Fragment): String {
     return " "
 }
 
+fun isJsonElementOdooIdNull(jsonElement: JsonElement) : Boolean{
+    return jsonElement.isJsonNull || jsonElement.isJsonPrimitive
+}
+
 fun worksheetsStates(receiveString: String): String {
     when (receiveString) {
         "draft" -> {

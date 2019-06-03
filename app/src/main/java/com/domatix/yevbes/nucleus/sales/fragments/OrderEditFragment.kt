@@ -24,9 +24,11 @@ import com.domatix.yevbes.nucleus.databinding.FragmentOrderEditBinding
 import com.domatix.yevbes.nucleus.products.entities.ProductProduct
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
+import com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity
 import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.OrderLinesAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
+import com.domatix.yevbes.nucleus.sales.entities.ProductPricelist
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrderLine
 import com.domatix.yevbes.nucleus.sales.interfaces.LongShortOrderItemClick
@@ -60,10 +62,10 @@ class OrderEditFragment : Fragment() {
         const val COMPANY_NAME = "CompanyName"
         const val REQUEST_CODE = 1
         const val SALES_MANAGER_REQUEST_CODE = 3
-
         const val CUSTOMER_REQUEST_CODE = 2
         const val INVOICE_REQUEST_CODE = 4
         const val SHIPPING_REQUEST_CODE = 5
+        const val PRICELIST_REQUEST_CODE = 6
 
         /**
          * Use this factory method to create a new instance of
@@ -84,10 +86,14 @@ class OrderEditFragment : Fragment() {
 
     private var partnerInvoiceId: Int? = null
     private var partnerShippingId: Int? = null
+    private var idPriceList: Int? = null
+    private var isPricelistWithDiscount: Boolean? = null
+
 
     private lateinit var selectedItemsJSONString: String
     private lateinit var addedItemsJSONString: String
     private val saleOrderLineListType = object : TypeToken<ArrayList<SaleOrderLine>>() {}.type
+    private val productPricelistType = object : TypeToken<ProductPricelist>() {}.type
 
 
     lateinit var addedItems: ArrayList<SaleOrderLine> private set
@@ -228,7 +234,6 @@ class OrderEditFragment : Fragment() {
         binding.amountTaxString = amountTax
         binding.amountTotalString = amountTotal
         binding.termsString = saleOrder!!.terms
-
         binding.partnerIdString = jsonElementToString(saleOrder!!.partnerId)
         binding.partnerInvoiceAddressString = jsonElementToString(saleOrder!!.partnerInvoiceId)
         binding.partnerShippingAddressString = jsonElementToString(saleOrder!!.partnerShippingId)
@@ -237,7 +242,12 @@ class OrderEditFragment : Fragment() {
 
         binding.buttonAddOrderSalesLine.setOnClickListener {
             val intent = Intent(activity, OrderLineListActivity::class.java)
-            startActivityForResult(intent, OrderEditFragment.REQUEST_CODE)
+            startActivityForResult(intent, REQUEST_CODE)
+        }
+
+        binding.priceList.setOnClickListener {
+            val intent = Intent(activity, PricelistListActivity::class.java)
+            startActivityForResult(intent, AddSaleFragment.PRICELIST_REQUEST_CODE)
         }
 
         activity = getActivity() as SaleDetailActivity
@@ -247,18 +257,18 @@ class OrderEditFragment : Fragment() {
 
         activity.setSupportActionBar(binding.tb)
         val actionBar = activity.supportActionBar
-      /*  if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-        }
+        /*  if (actionBar != null) {
+              actionBar.setHomeButtonEnabled(true)
+              actionBar.setDisplayHomeAsUpEnabled(true)
+          }
 
-        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
+          activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
 
 
-        drawerToggle = ActionBarDrawerToggle(activity, activity.binding.dl,
-                binding.tb, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        activity.binding.dl.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()*/
+          drawerToggle = ActionBarDrawerToggle(activity, activity.binding.dl,
+                  binding.tb, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+          activity.binding.dl.addDrawerListener(drawerToggle)
+          drawerToggle.syncState()*/
 
         setOnClickListeners(binding)
 
@@ -313,7 +323,22 @@ class OrderEditFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         when (requestCode) {
-            OrderEditFragment.REQUEST_CODE -> {
+            PRICELIST_REQUEST_CODE -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        val item = gson.fromJson<ProductPricelist>(data?.getStringExtra(AddSaleFragment.PRICELIST_ID), productPricelistType)
+
+                        if (idPriceList != item.id) {
+                            idPriceList = item.id
+                            binding.priceList.text = item.displayName
+                            checkForDiscountPolicy(item.id)
+                        }
+
+                    }
+                }
+            }
+
+            REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
 
@@ -360,7 +385,7 @@ class OrderEditFragment : Fragment() {
                 }
             }
 
-            OrderEditFragment.CUSTOMER_REQUEST_CODE -> {
+            CUSTOMER_REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         idCustomer = data?.getIntExtra(CUSTOMER_ID, 0)
@@ -381,7 +406,7 @@ class OrderEditFragment : Fragment() {
                 }
             }
 
-            OrderEditFragment.INVOICE_REQUEST_CODE -> {
+            INVOICE_REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         partnerInvoiceId = data?.getIntExtra(CUSTOMER_ID, 0)
@@ -396,7 +421,7 @@ class OrderEditFragment : Fragment() {
                 }
             }
 
-            OrderEditFragment.SHIPPING_REQUEST_CODE -> {
+            SHIPPING_REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         partnerShippingId = data?.getIntExtra(CUSTOMER_ID, 0)
@@ -447,6 +472,44 @@ class OrderEditFragment : Fragment() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun checkForDiscountPolicy(pricelistId: Int) {
+        // Lock main thread
+        Odoo.read(model = "product.pricelist", ids = listOf(pricelistId), fields = listOf("discount_policy")) {
+            onSubscribe { disposable ->
+                compositeDisposable.add(disposable)
+            }
+
+            onNext { response ->
+                if (response.isSuccessful) {
+                    val read = response.body()!!
+                    if (read.isSuccessful) {
+                        val result = read.result
+                        val discountPolicy = result.asJsonArray[1].asJsonObject["discount_policy"].asString
+                        when (discountPolicy) {
+                            "with_discount" -> {
+                                isPricelistWithDiscount = true
+                            }
+                            "without_discount" -> {
+                                isPricelistWithDiscount = false
+                            }
+                        }
+                    } else {
+                        // Odoo specific error
+                        Timber.w("read() failed with ${read.errorMessage}")
+                    }
+                } else {
+                    Timber.w("request failed with ${response.code()}:${response.message()}")
+                }
+            }
+            onError { error ->
+                error.printStackTrace()
+            }
+            onComplete {
+                // Unlock main thread
+            }
+        }
     }
 
 
@@ -659,7 +722,6 @@ class OrderEditFragment : Fragment() {
                 "price_unit" to item.priceUnit,
                 "name" to item.name,
                 "discount" to item.discount
-
         )) {
             onSubscribe { disposable ->
                 compositeDisposable.add(disposable)
@@ -793,7 +855,7 @@ class OrderEditFragment : Fragment() {
                         if (items.size == 0 && mAdapter!!.rowItemCount == 0) {
                             menu.findItem(R.id.action_confirm).isEnabled = false
 //                            mAdapter!!.showEmpty()
-                        }else {
+                        } else {
                             menu.findItem(R.id.action_confirm).isEnabled = true
                         }
 

@@ -70,8 +70,6 @@ class SaleOrderLineDataAdapter(
         super.clear()
     }
 
-
-
     val rowItemCount: Int get() = rowItems.size
 
     override fun onBindViewHolder(baseHolder: RecyclerView.ViewHolder, basePosition: Int) {

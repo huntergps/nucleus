@@ -323,6 +323,43 @@
                                 app:layout_constraintStart_toStartOf="@+id/partner_invoice_address"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address" />
 
+                            <View
+                                android:id="@+id/divider8"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="8dp"
+                                android:background="?android:attr/listDivider"
+                                app:layout_constraintStart_toStartOf="@+id/partner_shipping_address"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_shipping_address" />
+
+                            <TextView
+                                android:id="@+id/textView28"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="@string/pricelist"
+                                app:layout_constraintStart_toStartOf="@+id/partner_shipping_address"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_shipping_address"
+                                tools:text="Pricelist" />
+
+                            <TextView
+                                android:id="@+id/price_list"
+                                android:layout_width="0dp"
+                                android:layout_height="45dp"
+                                android:layout_marginEnd="8dp"
+                                android:gravity="center_vertical"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.pricelistId)}"
+                                android:textAppearance="?android:attr/textAppearanceMediumInverse"
+                                android:textColor="?attr/editTextColor"
+                                android:background="?attr/editTextBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="@+id/textView28"
+                                app:layout_constraintTop_toBottomOf="@+id/textView28"
+                                tools:text="Public" />
+
+
                         </android.support.constraint.ConstraintLayout>
                     </android.support.v7.widget.CardView>
 

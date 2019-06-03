@@ -90,7 +90,6 @@ class AddSaleFragment : Fragment() {
     lateinit var myProgressDialog: MyProgressDialog private set
     private val productPricelistType = object : TypeToken<ProductPricelist>() {}.type
 
-
     private val adapterSelectedListOrderLineDataAdapter: AddOrderLinesAdapter by lazy {
         AddOrderLinesAdapter(this, arrayListOf(), object : LongShortOrderItemClick {
             override fun onItemClick(view: View) {

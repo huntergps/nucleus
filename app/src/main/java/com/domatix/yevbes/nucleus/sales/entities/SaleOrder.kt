@@ -68,7 +68,7 @@ data class SaleOrder(
                 "partner_id" to "Partner ID", "partner_invoice_id" to "Partner Invoice ID",
                 "partner_shipping_id" to "Partner Shipping ID", "order_line" to "Lines",
                 "note" to "Terms", "amount_untaxed" to "Untaxed Amount", "amount_tax" to "Taxes",
-                "amount_total" to "Amount Total")
+                "amount_total" to "Amount Total", "pricelist_id" to "Pricelist id")
 
         @JvmField
         val fields: ArrayList<String> = fieldsMap.keys.toMutableList() as ArrayList<String>

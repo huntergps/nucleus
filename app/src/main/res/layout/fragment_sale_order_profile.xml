@@ -7,6 +7,7 @@
     <data>
 
         <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+        <import type="android.view.View" />
 
         <variable
             name="stateString"
@@ -258,6 +259,40 @@
                                 app:layout_constraintStart_toStartOf="@+id/partner_invoice_address"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address" />
 
+                            <LinearLayout
+                                android:id="@+id/ll_price_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="@{UtilsKt.isJsonElementOdooIdNull(saleOrderObj.pricelistId) ? View.GONE : View.VISIBLE}"
+                                app:layout_constraintStart_toStartOf="@+id/partner_shipping_address"
+                                app:layout_constraintTop_toBottomOf="@+id/partner_shipping_address">
+
+                                <View
+                                    android:id="@+id/divider6"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="8dp"
+                                    android:background="?android:attr/listDivider" />
+
+                                <TextView
+                                    android:id="@+id/textView25"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/pricelist"
+                                    tools:text="Pricelist" />
+
+                                <TextView
+                                    android:id="@+id/textView27"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@{UtilsKt.jsonElementToString(saleOrderObj.pricelistId)}"
+                                    android:textStyle="bold"
+                                    tools:text="Public" />
+                            </LinearLayout>
+
                         </android.support.constraint.ConstraintLayout>
                     </android.support.v7.widget.CardView>
 
@@ -281,7 +316,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="16dp">
-
 
                             <TextView
                                 android:id="@+id/amount_untaxed_label"
