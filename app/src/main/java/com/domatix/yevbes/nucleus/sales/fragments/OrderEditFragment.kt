@@ -18,9 +18,12 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.widget.Toast
+import com.airbnb.lottie.LottieDrawable
 import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.FragmentOrderEditBinding
+import com.domatix.yevbes.nucleus.generic.callbacs.OnDialogViewCreatedListener
+import com.domatix.yevbes.nucleus.generic.ui.dialogs.LoadingDialogFragment
 import com.domatix.yevbes.nucleus.products.entities.ProductProduct
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
@@ -101,6 +104,8 @@ class OrderEditFragment : Fragment() {
     lateinit var deletedItemsIdList: ArrayList<Int> private set
     lateinit var myProgressDialog: MyProgressDialog private set
     lateinit var progressDialog: ProgressDialog private set
+
+    private lateinit var dialogFragment: LoadingDialogFragment
 
 
     private var idCustomer: Int? = null
@@ -184,6 +189,7 @@ class OrderEditFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setHasOptionsMenu(true)
         if (!arguments!!.isEmpty) {
             saleOrderGsonAsAString = arguments!!.getString(ARG_PARAM1)
@@ -256,7 +262,17 @@ class OrderEditFragment : Fragment() {
         activity.binding.nsv.visibility = View.GONE
 
         activity.setSupportActionBar(binding.tb)
-        val actionBar = activity.supportActionBar
+
+        dialogFragment = LoadingDialogFragment.newInstance(
+                activity,
+                fragmentManager!!,
+                showInstantly = false,
+                playAnimation = true,
+                loopAnimation = true,
+                repeatCount = LottieDrawable.INFINITE,
+                cancelable = false)
+
+//        val actionBar = activity.supportActionBar
         /*  if (actionBar != null) {
               actionBar.setHomeButtonEnabled(true)
               actionBar.setDisplayHomeAsUpEnabled(true)
@@ -476,6 +492,15 @@ class OrderEditFragment : Fragment() {
 
     private fun checkForDiscountPolicy(pricelistId: Int) {
         // Lock main thread
+        dialogFragment.showDialog()
+        dialogFragment.setOnDialogViewCreatedListener(object: OnDialogViewCreatedListener{
+            override fun onDialogViewCreated() {
+                dialogFragment.setTilte("Loading data from Odoo")
+                dialogFragment.setMessage("Loading discount policy from Odoo")
+                dialogFragment.setAnimation("loading.json",true, true, LottieDrawable.INFINITE)
+            }
+        })
+
         Odoo.read(model = "product.pricelist", ids = listOf(pricelistId), fields = listOf("discount_policy")) {
             onSubscribe { disposable ->
                 compositeDisposable.add(disposable)
@@ -486,7 +511,7 @@ class OrderEditFragment : Fragment() {
                     val read = response.body()!!
                     if (read.isSuccessful) {
                         val result = read.result
-                        val discountPolicy = result.asJsonArray[1].asJsonObject["discount_policy"].asString
+                        val discountPolicy = result.asJsonArray[0].asJsonObject["discount_policy"].asString
                         when (discountPolicy) {
                             "with_discount" -> {
                                 isPricelistWithDiscount = true
@@ -506,8 +531,9 @@ class OrderEditFragment : Fragment() {
             onError { error ->
                 error.printStackTrace()
             }
+
             onComplete {
-                // Unlock main thread
+                dialogFragment.dismissDialog()
             }
         }
     }
