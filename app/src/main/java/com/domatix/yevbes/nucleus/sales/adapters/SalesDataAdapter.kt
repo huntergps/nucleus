@@ -95,7 +95,7 @@ class SalesDataAdapter(
                 val date = fromStringToDate(item.dateOrder, "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 val dateOrder = getDateToFriendlyFormat(date, "dd MMM", Locale.getDefault(), TimeZone.getTimeZone("GMT+01:00")).toLowerCase()
                 val amountTotal = "%.2f".format(item.amountTotal).replace('.', '%').replace(',', '.').replace('%', ',')
-                val state = saleStates(item.state, fragment)
+                val state = saleStates(item.state)
                 val name = item.name + " (${jsonElementToString(item.partnerId)})"
 
                 binding.dateOrderString = dateOrder

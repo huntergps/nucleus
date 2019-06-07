@@ -64,6 +64,7 @@ class SaleOrderProfileFragment : Fragment() {
     private lateinit var saleOrder: SaleOrder
     private lateinit var mOptionMenu: Menu
     private var saleOrderId: Int? = null
+    private var isSaleOrderModified = false
 
     lateinit var compositeDisposable: CompositeDisposable private set
 
@@ -83,28 +84,15 @@ class SaleOrderProfileFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_sale_order_profile, container, false)
-        // Inflate the layout for this fragment
+
         compositeDisposable = CompositeDisposable()
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sale_order_profile, container, false)
-
-
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-//        representSaleOrderData()
         activity = getActivity() as SaleDetailActivity
-
-        val mLayoutManager = LinearLayoutManager(context)
-        binding.saleOrderLineRecyclerView.layoutManager = mLayoutManager
-        binding.saleOrderLineRecyclerView.itemAnimator = DefaultItemAnimator()
-        mAdapter.setupScrollListener(binding.saleOrderLineRecyclerView)
-
-
-//        activity.setTitle(R.string.action_sales)
         activity.title = getString(R.string.sale_name_title,saleOrder.name)
 
         activity.binding.abl.visibility = View.GONE
@@ -117,39 +105,20 @@ class SaleOrderProfileFragment : Fragment() {
         binding.tb.setNavigationOnClickListener {
             activity.onBackPressed()
         }
-      /*  val actionBar = activity.supportActionBar
-        if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-        }*/
 
-        /*activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
-
-        drawerToggle = ActionBarDrawerToggle(activity, activity.binding.dl,
-                binding.tb, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        activity.binding.dl.addDrawerListener(drawerToggle)
-        drawerToggle.syncState()*/
-    }
-
-    private fun representSaleOrderData() {
-        val date = fromStringToDate(saleOrder.dateOrder, "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val dateOrder = getDateToFriendlyFormat(date, "dd MMM", Locale.getDefault(), TimeZone.getTimeZone("GMT+01:00")).toLowerCase()
-        val amountTotal = "%.2f".format(saleOrder.amountTotal).replace('.', '%').replace(',', '.').replace('%', ',')
-        val amountUntaxed = "%.2f".format(saleOrder.amountUntaxed).replace('.', '%').replace(',', '.').replace('%', ',')
-        val amountTax = "%.2f".format(saleOrder.amountTax).replace('.', '%').replace(',', '.').replace('%', ',')
-        val state = saleStates(saleOrder.state, this)
-
-
-        binding.saleOrderObj = saleOrder
-        binding.stateString = state
-        binding.dateOrderString = dateOrder
-        binding.amountUntaxedString = amountUntaxed
-        binding.amountTaxString = amountTax
-        binding.amountTotalString = amountTotal
-        binding.termsString = saleOrder.terms
+        val mLayoutManager = LinearLayoutManager(context)
+        binding.saleOrderLineRecyclerView.layoutManager = mLayoutManager
+        binding.saleOrderLineRecyclerView.itemAnimator = DefaultItemAnimator()
+        mAdapter.setupScrollListener(binding.saleOrderLineRecyclerView)
         binding.saleOrderLineRecyclerView.adapter = mAdapter
+        binding.saleOrder = saleOrder
+        if (isSaleOrderModified) {
+            isSaleOrderModified = false
+            updateSaleOrder()
+        }else{
+            fetchSaleOrderLines("order_id", saleOrderId)
+        }
     }
-
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
@@ -158,16 +127,9 @@ class SaleOrderProfileFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        updateSaleOrder()
-//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
-        super.onStart()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.dispose()
-//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
         mAdapter.clear()
     }
 
@@ -221,7 +183,7 @@ class SaleOrderProfileFragment : Fragment() {
                             mOptionMenu.findItem(R.id.action_confirm)?.isEnabled = false
                             mOptionMenu.findItem(R.id.action_confirm)?.isCheckable = false
 
-                            binding.state.text = saleStates("done", this@SaleOrderProfileFragment)
+                            binding.state.text = saleStates("done")
 
                         }
 
@@ -236,13 +198,17 @@ class SaleOrderProfileFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    fun isSaleOrderModified(param: Boolean){
+        this.isSaleOrderModified = param
+    }
+
     private fun fetchSaleOrderLines(param1: String?, param2: Any?) {
         Odoo.searchRead("sale.order.line",
                 SaleOrderLine.fields,
                 listOf(
                         listOf(param1, '=', param2)
                 )
-                , mAdapter.rowItemCount, 0) {
+                , mAdapter.rowItemCount, RECORD_LIMIT) {
             onSubscribe { disposable ->
                 compositeDisposable.add(disposable)
             }
@@ -259,7 +225,7 @@ class SaleOrderProfileFragment : Fragment() {
                         if (items.size == 0 && mAdapter.rowItemCount == 0) {
                             mAdapter.showEmpty()
                         }
-                        /* if (items.size < limit) {
+                         if (items.size < RECORD_LIMIT) {
                              mAdapter.removeMoreListener()
                              if (items.size == 0 && mAdapter.rowItemCount == 0) {
                                  mAdapter.showEmpty()
@@ -267,10 +233,10 @@ class SaleOrderProfileFragment : Fragment() {
                          } else {
                              if (!mAdapter.hasMoreListener()) {
                                  mAdapter.moreListener {
-                                     fetchSales()
+                                     fetchSaleOrderLines(param1, param2)
                                  }
                              }
-                         }*/
+                         }
                         mAdapter.addRowItems(items)
                         compositeDisposable.dispose()
                         compositeDisposable = CompositeDisposable()
@@ -292,7 +258,6 @@ class SaleOrderProfileFragment : Fragment() {
     }
 
     private fun updateSaleOrder() {
-        representSaleOrderData()
         Odoo.load(id = saleOrderId!!, model = "sale.order", fields = SaleOrder.fields) {
             onSubscribe {
                 disposable -> compositeDisposable.add(disposable)
@@ -303,8 +268,7 @@ class SaleOrderProfileFragment : Fragment() {
                     if (load.isSuccessful) {
                         val item: SaleOrder = gson.fromJson(load.result.value, saleOrderType)
                         saleOrder = item
-                        representSaleOrderData()
-                        fetchSaleOrderLines("order_id", saleOrderId)
+                        binding.saleOrder = saleOrder
                     } else {
                         // Odoo specific error
                         Timber.w("load() failed with ${load.errorMessage}")
@@ -319,9 +283,8 @@ class SaleOrderProfileFragment : Fragment() {
             }
 
             onComplete {
-
+                fetchSaleOrderLines("order_id", saleOrderId)
             }
-
         }
     }
 

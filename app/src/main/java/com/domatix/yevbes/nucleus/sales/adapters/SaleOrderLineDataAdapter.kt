@@ -81,42 +81,7 @@ class SaleOrderLineDataAdapter(
                 val holder = baseHolder as SaleOrderLineViewHolder
                 val item = items[position] as SaleOrderLine
                 val binding = holder.binding
-
-
-                val priceUnit = "%.2f".format(item.priceUnit).replace('.', '%').replace(',', '.').replace('%', ',')
-                val subtotal = "%.2f".format(item.priceSubtotal).replace('.', '%').replace(',', '.').replace('%', ',')
-
-                binding.productIdString = jsonElementToString(item.productId)
-                binding.productDescString = item.name
-                binding.qtyString = item.qty.toString()
-                binding.priceUnitString = priceUnit
-                binding.subtotalString = subtotal
-
-                // If discount is activated in Sale settings
-                val discount = "%.2f".format(item.discount).replace('.', '%').replace(',', '.').replace('%', ',')
-                binding.discount.text = discount
-                binding.groupDiscountPerSoLine =  fragment.activity.getGroupDiscountPerSoLine()
-
-                /*if (!binding.root.hasOnClickListeners()) {
-                    binding.root.setOnClickListener {
-                        val clickedPosition = holder.adapterPosition
-                        val clickedItem = items[clickedPosition] as SaleOrderLine
-
-                        val saleOrderGson = Gson()
-                        val saleOrderGsonAsAString = saleOrderGson.toJson(clickedItem)
-
-                        val saleOrderProfileFragment = SaleOrderProfileFragment.newInstance(saleOrderGsonAsAString)
-
-
-                        fragment.fragmentManager!!.beginTransaction()
-                                .replace(R.id.clMain, saleOrderProfileFragment,SaleOrderProfileFragment.SALE_ORDER_PROFILE_FRAG_TAG)
-                                .addToBackStack(null)
-                                .commit()
-
-                        Timber.v(String.format("%s : %s", clickedPosition, clickedItem.name))
-                    }
-                }*/
-
+                binding.saleOrderLine = item
 
             }
         }

@@ -1,7 +1,6 @@
 package com.domatix.yevbes.nucleus
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.databinding.DataBindingUtil
@@ -14,9 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import com.domatix.yevbes.nucleus.about.AboutActivity
 import com.domatix.yevbes.nucleus.activities.ActivitiesFragment
-import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.core.authenticator.ProfileActivity
-import com.domatix.yevbes.nucleus.core.entities.session.authenticate.AuthenticateResult
 import com.domatix.yevbes.nucleus.core.preferences.SettingsActivity
 import com.domatix.yevbes.nucleus.core.utils.NavHeaderViewHolder
 import com.domatix.yevbes.nucleus.core.utils.android.ktx.postEx
@@ -27,10 +24,6 @@ import com.domatix.yevbes.nucleus.sga.view.ui.DashboardInventoryFragment
 import com.domatix.yevbes.nucleus.sga.view.ui.InventorySettingsFragment
 import com.domatix.yevbes.nucleus.sga.view.ui.StoreFragment
 import com.domatix.yevbes.nucleus.sga.view.ui.TransfersFragment
-import timber.log.Timber
-import java.util.*
-import kotlin.collections.HashSet
-import kotlin.collections.LinkedHashSet
 
 class MainActivity : AppCompatActivity() {
 
@@ -291,7 +284,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            loadFragment(ACTION_CONTACT)
+            loadFragment(ACTION_SALES)
         }
     }
 
@@ -432,11 +425,6 @@ class MainActivity : AppCompatActivity() {
             fragmentManager.popBackStackImmediate()
         }
     }
-
-
-
-
-
 
 
 /*override fun onBackPressed() {

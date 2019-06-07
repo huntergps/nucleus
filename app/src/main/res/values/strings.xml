@@ -446,6 +446,14 @@
     <string name="english_language">English</string>
     <string name="spanish_language">Spanish</string>
     <string name="set_default_language_text">Select the preferred language:</string>
-    <string name="choose_customer">Please choose a customer</string>
     <!-- -->
+
+    <string name="choose_customer">Please choose a customer</string>
+    <string name="loading_data">Loading data from Odoo</string>
+    <string name="loading_discount_policy">Loading discount policy from Odoo</string>
+    <string name="remove_element">Remove element</string>
+    <string name="remove_element_message">Are you sure you want to remove following element: %1$s?</string>
+    <string name="removed_element_message">Element %1$s removed.</string>
+    <string name="qty_updated">Quantity is updated successfully</string>
+    <string name="qty_wrong">Quantity wrong</string>
 </resources>

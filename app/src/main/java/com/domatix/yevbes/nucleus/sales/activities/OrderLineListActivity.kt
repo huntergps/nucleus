@@ -1,50 +1,186 @@
 package com.domatix.yevbes.nucleus.sales.activities
 
-import android.app.Activity
-import android.app.SearchManager
-import android.content.Context
-import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.*
-import android.widget.ImageView
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.EditText
+import android.widget.Toast
 import com.domatix.yevbes.nucleus.R
 import com.domatix.yevbes.nucleus.RECORD_LIMIT
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.ActivityOrderLineListBinding
 import com.domatix.yevbes.nucleus.errorBodySpanned
+import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterItemClickListener
+import com.domatix.yevbes.nucleus.generic.callbacs.views.OnViewLongClickListener
+import com.domatix.yevbes.nucleus.generic.callbacs.views.OnViewShortClickListener
 import com.domatix.yevbes.nucleus.gson
-import com.domatix.yevbes.nucleus.products.entities.ProductProduct
-import com.domatix.yevbes.nucleus.sales.adapters.AddProductProductDataAdapter
-import com.domatix.yevbes.nucleus.sales.fragments.AddSaleFragment
-import com.google.gson.Gson
+import com.domatix.yevbes.nucleus.sales.adapters.AddProductDataAdapter
+import com.domatix.yevbes.nucleus.sales.entities.CustomProductQtyEntity
 import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.dialog_add_product.view.*
 
-class OrderLineListActivity : AppCompatActivity() {
+class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        if (query != null) {
+            mAdapter.clear()
+            compositeDisposable.dispose()
+            compositeDisposable = CompositeDisposable()
+            fetchQueryProductProduct(query)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if (newText != null) {
+            mAdapter.clear()
+            compositeDisposable.dispose()
+            compositeDisposable = CompositeDisposable()
+            fetchQueryProductProduct(newText)
+        }
+        return true
+    }
 
     private var recyclerView: RecyclerView? = null
-
     lateinit var compositeDisposable: CompositeDisposable private set
-    private val productProductListType = object : TypeToken<ArrayList<ProductProduct>>() {}.type
+    private val productProductListType = object : TypeToken<ArrayList<CustomProductQtyEntity>>() {}.type
     private lateinit var binding: ActivityOrderLineListBinding
+    private lateinit var confirmItem: MenuItem
     private val limit = RECORD_LIMIT
 
-    val mAdapter: AddProductProductDataAdapter by lazy {
-        AddProductProductDataAdapter(binding, arrayListOf())
+
+    val mAdapter: AddProductDataAdapter by lazy {
+        AddProductDataAdapter(binding.rvOrderLineList, arrayListOf(), object : OnShortLongAdapterItemClickListener {
+            override fun onShortAdapterItemPressed(view: View) {
+                val position = binding.rvOrderLineList.getChildAdapterPosition(view)
+                val actualItem = mAdapter.items[position] as CustomProductQtyEntity
+                mAdapter.updateProductRowItem(position, actualItem)
+                var isFounded = false
+                mAdapter.selectedProducts.forEachIndexed { index, it ->
+                    if (it.idProduct == actualItem.idProduct) {
+                        actualItem.quantity = ++it.quantity
+                        mAdapter.selectedProducts[index] = actualItem
+                        isFounded = true
+                    }
+                }
+                if (!isFounded) {
+                    actualItem.quantity++
+                    mAdapter.selectedProducts.add(actualItem)
+                }
+
+                confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
+
+            }
+
+            override fun onLongAdapterItemPressed(view: View) {
+                showAlertDialogQty(view)
+                confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
+            }
+
+        }, object : OnViewShortClickListener {
+            override fun onShortClick(view: View) {
+                val position = binding.rvOrderLineList.getChildAdapterPosition(view)
+                val item = mAdapter.items[position] as CustomProductQtyEntity
+                var index = -1
+                mAdapter.selectedProducts.forEachIndexed { indx, it ->
+                    if (it.idProduct == item.idProduct) {
+                        item.quantity = --it.quantity
+                        if (item.quantity > 0f)
+                            mAdapter.selectedProducts[indx] = item
+                        else {
+                            index = indx
+                        }
+                    }
+
+                    if (index != -1)
+                        mAdapter.selectedProducts.removeAt(index)
+
+                }
+                mAdapter.updateProductRowItem(position, item)
+                confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
+            }
+        }, object : OnViewLongClickListener {
+            override fun onLongClick(view: View) {
+                val position = binding.rvOrderLineList.getChildAdapterPosition(view)
+                val item = mAdapter.items[position] as CustomProductQtyEntity
+                item.quantity = 0f
+                mAdapter.updateProductRowItem(position, item)
+                var index = -1
+                mAdapter.selectedProducts.forEachIndexed { idx, it ->
+                    if (it.idProduct == item.idProduct) {
+                        index = idx
+                    }
+                }
+                if (index != -1)
+                    mAdapter.selectedProducts.removeAt(index)
+
+                confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
+            }
+        })
+    }
+
+    private fun showAlertDialogQty(view: View) {
+        val position = binding.rvOrderLineList.getChildAdapterPosition(view)
+        val item = mAdapter.items[position] as CustomProductQtyEntity
+        val currentQty = item.quantity
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_element_qty, null)
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.quantity_dialog_title)
+        builder.setView(dialogView)
+
+        val dialog = builder.create()
+        dialog.show()
+
+        val etQty = dialogView.findViewById<EditText>(R.id.quantity)
+        etQty.setText(currentQty.toString())
+
+        dialogView.bCancel.setOnClickListener {
+            dialog.cancel()
+        }
+
+        dialogView.b_ok.setOnClickListener { _ ->
+            val qty = etQty.text.toString().toFloat()
+            if (currentQty != qty && qty >= 0f) {
+                item.quantity = qty
+                mAdapter.updateProductRowItem(position, item)
+                var index = -1
+                mAdapter.selectedProducts.forEachIndexed { indx, it ->
+                    if (it.idProduct == item.idProduct) {
+                        if (qty == 0f) {
+                            index = indx
+                        }else{
+                            mAdapter.selectedProducts[indx] = item
+                        }
+                    }
+                }
+                if (index != -1)
+                    mAdapter.selectedProducts.removeAt(index)
+
+                Toast.makeText(this, getString(R.string.qty_updated), Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+                confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
+            }else{
+                Toast.makeText(this, getString(R.string.qty_wrong), Toast.LENGTH_SHORT).show()
+            }
+
+        }
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_order_line_list)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_order_line_list)
+        compositeDisposable = CompositeDisposable()
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-
 
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -52,63 +188,19 @@ class OrderLineListActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
-
-        filterProductProduct()
-
-        compositeDisposable = CompositeDisposable()
-
         recyclerView = findViewById(R.id.rv_order_line_list)
-
-        //mAdapter = AddProductProductDataAdapter(binding, saleOrderLineList)
         val mLayoutManager = LinearLayoutManager(applicationContext)
 
         recyclerView?.layoutManager = mLayoutManager
         recyclerView?.itemAnimator = DefaultItemAnimator()
         recyclerView?.adapter = mAdapter
 
-        findViewById<ImageView>(R.id.addSelectedProductProductImageButton).setOnClickListener {
-            if (mAdapter.selectedList.isNotEmpty()) {
-                val selectedListGson = Gson()
-                val selectedListGsonAsAString = selectedListGson.toJson(mAdapter.selectedList)
-                val returnIntent = Intent()
-                returnIntent.putExtra(AddSaleFragment.SELECTED_LIST, selectedListGsonAsAString)
-                setResult(Activity.RESULT_OK, returnIntent)
-                finish()
-            }
-        }
-
         fetchProductProduct()
     }
 
-    private fun filterProductProduct() {
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val searchView = findViewById<SearchView>(R.id.searchBar)
-        searchView.queryHint = getString(R.string.search)
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query != null) {
-                    mAdapter?.filter(query)
-                }
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null) {
-                    mAdapter?.filter(newText)
-                }
-                return true
-            }
-
-        })
-
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        searchView.setIconifiedByDefault(false)
-    }
 
     private fun fetchProductProduct() {
-        Odoo.searchRead("product.product", ProductProduct.fields,
+        Odoo.searchRead("product.product", CustomProductQtyEntity.fields,
                 listOf(listOf("sale_ok", "=", true
                 )), mAdapter.rowItemCount, limit, "name DESC") {
             onSubscribe { disposable ->
@@ -123,7 +215,7 @@ class OrderLineListActivity : AppCompatActivity() {
                         mAdapter.hideEmpty()
                         mAdapter.hideError()
                         mAdapter.hideMore()
-                        val items: ArrayList<ProductProduct> = gson.fromJson(searchRead.result.records, productProductListType)
+                        val items: ArrayList<CustomProductQtyEntity> = gson.fromJson(searchRead.result.records, productProductListType)
 
                         if (items.size < limit) {
                             mAdapter.removeMoreListener()
@@ -137,9 +229,7 @@ class OrderLineListActivity : AppCompatActivity() {
                                 }
                             }
                         }
-                        mAdapter.addRowItems(items)
-                        compositeDisposable.dispose()
-                        compositeDisposable = CompositeDisposable()
+                        mAdapter.addProductRowItems(items)
                     } else {
                         mAdapter.showError(searchRead.errorMessage)
                     }
@@ -160,17 +250,82 @@ class OrderLineListActivity : AppCompatActivity() {
         }
     }
 
-    /*override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater?.inflate(R.menu.menu_order_line_list, menu)
+    private fun fetchQueryProductProduct(query: String) {
+        Odoo.searchRead("product.product", CustomProductQtyEntity.fields,
+                listOf(
+                        listOf("sale_ok", "=", true),
+                        "|",
+                        "|",
+                        listOf("default_code", "ilike", query),
+                        listOf("name", "ilike", query),
+                        listOf("barcode", "ilike", query)
+                ), mAdapter.rowItemCount, limit, "name DESC") {
+            onSubscribe { disposable ->
+                compositeDisposable.add(disposable)
+            }
+
+            onNext { response ->
+                if (response.isSuccessful) {
+                    val searchRead = response.body()!!
+                    if (searchRead.isSuccessful) {
+                        mAdapter.hideEmpty()
+                        mAdapter.hideError()
+                        mAdapter.hideMore()
+                        val items: ArrayList<CustomProductQtyEntity> = gson.fromJson(searchRead.result.records, productProductListType)
+
+                        if (items.size < limit) {
+                            mAdapter.removeMoreListener()
+                            if (items.size == 0 && mAdapter.rowItemCount == 0) {
+                                mAdapter.showEmpty()
+                            }
+                        } else {
+                            if (!mAdapter.hasMoreListener()) {
+                                mAdapter.moreListener {
+                                    fetchQueryProductProduct(query)
+                                }
+                            }
+                        }
+                        mAdapter.addProductRowItems(items)
+                    } else {
+                        mAdapter.showError(searchRead.errorMessage)
+                    }
+                } else {
+                    mAdapter.showError(response.errorBodySpanned)
+                }
+                mAdapter.finishedMoreLoading()
+            }
+
+            onError { error ->
+                error.printStackTrace()
+                mAdapter.finishedMoreLoading()
+            }
+
+            onComplete {
+
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_add_product_qty, menu)
+        confirmItem = menu?.findItem(R.id.action_confirm)!!
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+        searchView.setOnQueryTextListener(this)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.action_add -> {
+        when(item?.itemId) {
+            R.id.action_search -> {
 
+            }
+            R.id.action_confirm -> {
+                if (mAdapter.selectedProducts.isNotEmpty()) {
+
+                }
             }
         }
         return super.onOptionsItemSelected(item)
-    }*/
+    }
 }

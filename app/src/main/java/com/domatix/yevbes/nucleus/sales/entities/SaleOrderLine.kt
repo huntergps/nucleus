@@ -8,39 +8,39 @@ import java.util.*
 data class SaleOrderLine(
         @Expose
         @SerializedName("id")
-        val id: Int,
+        var id: Int,
 
         @Expose
         @SerializedName("name")
-        val name: String,
+        var name: String,
 
         @Expose
         @SerializedName("product_id")
-        val productId: JsonElement,
+        var productId: JsonElement,
 
         @Expose
         @SerializedName("product_uom_qty")
-        val qty: Float,
+        var qty: Float,
 
         @Expose
         @SerializedName("discount")
-        val discount: Float,
+        var discount: Float,
 
         @Expose
         @SerializedName("price_unit")
-        val priceUnit: Float,
+        var priceUnit: Float,
 
         @Expose
         @SerializedName("price_total")
-        val priceTotal: Float,
+        var priceTotal: Float,
 
         @Expose
         @SerializedName("price_subtotal")
-        val priceSubtotal: Float,
+        var priceSubtotal: Float,
 
         @Expose
         @SerializedName("tax_id")
-        val taxId: JsonElement
+        var taxId: JsonElement
 ) {
     companion object {
 

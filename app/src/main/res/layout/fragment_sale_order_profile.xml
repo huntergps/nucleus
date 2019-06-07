@@ -7,49 +7,14 @@
     <data>
 
         <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+
         <import type="android.view.View" />
 
         <variable
-            name="stateString"
-            type="String" />
-
-        <variable
-            name="termsString"
-            type="String" />
-
-        <variable
-            name="dateOrderString"
-            type="String" />
-
-        <variable
-            name="amountUntaxedString"
-            type="String" />
-
-        <variable
-            name="amountTaxString"
-            type="String" />
-
-        <variable
-            name="amountTotalString"
-            type="String" />
-
-        <variable
-            name="saleOrderObj"
+            name="saleOrder"
             type="com.domatix.yevbes.nucleus.sales.entities.SaleOrder" />
     </data>
-    <!--<android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tb"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>-->
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -106,7 +71,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:gravity="center_horizontal"
-                                android:text="@{saleOrderObj.name}"
+                                android:text="@{saleOrder.name}"
                                 android:textSize="20sp"
                                 android:textStyle="bold"
                                 android:typeface="normal"
@@ -131,7 +96,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:text="@{dateOrderString}"
+                                android:text="@{saleOrder.dateOrder}"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toEndOf="@+id/date_order_label"
                                 app:layout_constraintTop_toTopOf="@+id/date_order_label"
@@ -156,7 +121,7 @@
                                 android:paddingLeft="5dp"
                                 android:paddingRight="5dp"
                                 android:paddingBottom="3dp"
-                                android:text="@{stateString}"
+                                android:text="@{UtilsKt.saleStates(saleOrder.state)}"
                                 android:textColor="@android:color/background_light"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="@+id/state_label"
@@ -194,7 +159,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:gravity="end"
-                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.partnerId)}"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrder.partnerId)}"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="@+id/partner_id_label"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_id_label"
@@ -215,7 +180,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:gravity="end|center_vertical"
-                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.partnerInvoiceId)}"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrder.partnerInvoiceId)}"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="@+id/partner_invoice_address_label"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address_label"
@@ -235,7 +200,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.partnerShippingId)}"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrder.partnerShippingId)}"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="@+id/partner_shipping_address_label"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_shipping_address_label"
@@ -264,7 +229,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:visibility="@{UtilsKt.isJsonElementOdooIdNull(saleOrderObj.pricelistId) ? View.GONE : View.VISIBLE}"
                                 app:layout_constraintStart_toStartOf="@+id/partner_shipping_address"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_shipping_address">
 
@@ -288,7 +252,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="8dp"
-                                    android:text="@{UtilsKt.jsonElementToString(saleOrderObj.pricelistId)}"
+                                    android:text="@{UtilsKt.jsonElementToString(saleOrder.pricelistId)}"
                                     android:textStyle="bold"
                                     tools:text="Public" />
                             </LinearLayout>
@@ -334,7 +298,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:gravity="end"
-                                android:text="@{amountUntaxedString}"
+                                android:text="@{Float.toString(saleOrder.amountUntaxed)}"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
@@ -355,7 +319,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:gravity="end|center_vertical"
-                                android:text="@{amountTaxString}"
+                                android:text="@{Float.toString(saleOrder.amountTax)}"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="@+id/amount_untaxed"
                                 app:layout_constraintTop_toBottomOf="@+id/amount_untaxed"
@@ -375,7 +339,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:text="@{amountTotalString}"
+                                android:text="@{Float.toString(saleOrder.amountTotal)}"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="@+id/amount_tax"
                                 app:layout_constraintTop_toBottomOf="@+id/amount_tax"
@@ -388,7 +352,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="16dp"
                                 android:hint="@string/terms"
-                                android:text="@{termsString}"
+                                android:text="@{saleOrder.terms}"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/total_label" />
 
@@ -407,7 +371,6 @@
 
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
-
 
         </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>

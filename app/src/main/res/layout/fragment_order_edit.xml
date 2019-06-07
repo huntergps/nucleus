@@ -5,62 +5,13 @@
     tools:context=".sales.fragments.OrderEditFragment">
 
     <data>
-
         <import type="com.domatix.yevbes.nucleus.UtilsKt" />
 
         <variable
-            name="stateString"
-            type="String" />
-
-        <variable
-            name="termsString"
-            type="String" />
-
-        <variable
-            name="dateOrderString"
-            type="String" />
-
-        <variable
-            name="amountUntaxedString"
-            type="String" />
-
-        <variable
-            name="amountTaxString"
-            type="String" />
-
-        <variable
-            name="amountTotalString"
-            type="String" />
-
-        <variable
-            name="partnerIdString"
-            type="String" />
-
-        <variable
-            name="partnerInvoiceAddressString"
-            type="String" />
-
-        <variable
-            name="partnerShippingAddressString"
-            type="String" />
-
-        <variable
-            name="saleOrderObj"
+            name="saleOrder"
             type="com.domatix.yevbes.nucleus.sales.entities.SaleOrder" />
+
     </data>
-    <!--<android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tb"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>-->
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -115,7 +66,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:gravity="center_horizontal"
-                                android:text="@{saleOrderObj.name}"
+                                android:text="@{saleOrder.name}"
                                 android:textSize="20sp"
                                 android:textStyle="bold"
                                 android:typeface="normal"
@@ -140,7 +91,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:text="@{dateOrderString}"
+                                android:text="@{saleOrder.dateOrder}"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toEndOf="@+id/date_order_label"
                                 app:layout_constraintTop_toTopOf="@+id/date_order_label"
@@ -165,7 +116,7 @@
                                 android:paddingLeft="5dp"
                                 android:paddingRight="5dp"
                                 android:paddingBottom="3dp"
-                                android:text="@{stateString}"
+                                android:text="@{UtilsKt.saleStates(saleOrder.state)}"
                                 android:textColor="@android:color/background_light"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="@+id/state_label"
@@ -198,19 +149,6 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <!--TextView
-                                android:id="@+id/partner_id"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@{partnerIdString}"
-                                android:textStyle="bold"
-                                android:clickable="true"
-                                android:focusable="true"
-                                app:layout_constraintStart_toStartOf="@+id/partner_id_label"
-                                app:layout_constraintTop_toBottomOf="@+id/partner_id_label"
-                                tools:text="Domatix" /-->
-
                             <TextView
                                 android:id="@+id/partner_id"
                                 android:layout_width="match_parent"
@@ -220,7 +158,7 @@
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:gravity="center_vertical"
-                                android:text="@{partnerIdString}"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrder.partnerId)}"
                                 android:textAppearance="?android:attr/textAppearanceMediumInverse"
                                 android:textColor="?attr/editTextColor"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -238,19 +176,6 @@
                                 app:layout_constraintStart_toStartOf="@+id/partner_id"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_id" />
 
-                            <!--TextView
-                                android:id="@+id/partner_invoice_address"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@{partnerInvoiceAddressString}"
-                                android:textStyle="bold"
-                                android:clickable="true"
-                                android:focusable="true"
-                                app:layout_constraintStart_toStartOf="@+id/partner_invoice_address_label"
-                                app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address_label"
-                                tools:text="Domatix" /-->
-
                             <TextView
                                 android:id="@+id/partner_invoice_address"
                                 android:layout_width="match_parent"
@@ -259,7 +184,7 @@
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:gravity="center_vertical"
-                                android:text="@{partnerInvoiceAddressString}"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrder.partnerInvoiceId)}"
                                 android:textAppearance="?android:attr/textAppearanceMediumInverse"
                                 android:textColor="?attr/editTextColor"
                                 app:layout_constraintStart_toStartOf="@+id/partner_invoice_address_label"
@@ -275,19 +200,6 @@
                                 app:layout_constraintStart_toStartOf="@+id/partner_invoice_address"
                                 app:layout_constraintTop_toBottomOf="@+id/partner_invoice_address" />
 
-                            <!--TextView
-                                android:id="@+id/partner_shipping_address"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@{partnerShippingAddressString}"
-                                android:textStyle="bold"
-                                android:clickable="true"
-                                android:focusable="true"
-                                app:layout_constraintStart_toStartOf="@+id/partner_shipping_address_label"
-                                app:layout_constraintTop_toBottomOf="@+id/partner_shipping_address_label"
-                                tools:text="Domatix" /-->
-
                             <TextView
                                 android:id="@+id/partner_shipping_address"
                                 android:layout_width="match_parent"
@@ -297,7 +209,7 @@
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:gravity="center_vertical"
-                                android:text="@{partnerShippingAddressString}"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrder.partnerShippingId)}"
                                 android:textAppearance="?android:attr/textAppearanceMediumInverse"
                                 android:textColor="?attr/editTextColor"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -348,7 +260,7 @@
                                 android:layout_height="45dp"
                                 android:layout_marginEnd="8dp"
                                 android:gravity="center_vertical"
-                                android:text="@{UtilsKt.jsonElementToString(saleOrderObj.pricelistId)}"
+                                android:text="@{UtilsKt.jsonElementToString(saleOrder.pricelistId)}"
                                 android:textAppearance="?android:attr/textAppearanceMediumInverse"
                                 android:textColor="?attr/editTextColor"
                                 android:background="?attr/editTextBackground"
@@ -408,7 +320,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/terms"
-                                android:text="@{termsString}"
+                                android:text="@{saleOrder.terms}"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />

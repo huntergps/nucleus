@@ -18,6 +18,7 @@ class SaleDetailActivity : AppCompatActivity() {
     private var groupDiscountPerSoLine: Boolean = false
     private var saleNote: String? = null
     private var useSaleNote: Boolean = false
+    private lateinit var saleOrderGsonAsAString: String
 
     companion object {
         const val FRAGMENT_TYPE = "FRAGMENT_TYPE"
@@ -28,13 +29,21 @@ class SaleDetailActivity : AppCompatActivity() {
         }
     }
 
+    private val saleOrderDetailFragmen: SaleOrderProfileFragment by lazy {
+        SaleOrderProfileFragment.newInstance(saleOrderGsonAsAString)
+    }
+
     fun getGroupDiscountPerSoLine(): Boolean {
         return groupDiscountPerSoLine
     }
 
+    fun isSaleOrderModified(param: Boolean){
+        saleOrderDetailFragmen.isSaleOrderModified(param)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        saleOrderGsonAsAString = intent.extras.getString(SalesFragment.SALE_ORDER)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_sale_detail)
 //        setContentView(R.layout.activity_sale_detail)
     }
@@ -53,13 +62,11 @@ class SaleDetailActivity : AppCompatActivity() {
         }
 
         let {
-            val saleOrderGsonAsAString = intent.extras.getString(SalesFragment.SALE_ORDER)
             val type = intent.getSerializableExtra(FRAGMENT_TYPE) as FragmentType
             when (type) {
                 Companion.FragmentType.DetailFragment -> {
-                    val saleOrderProfileFragment = SaleOrderProfileFragment.newInstance(saleOrderGsonAsAString)
                     supportFragmentManager.beginTransaction()
-                            .replace(R.id.clMain, saleOrderProfileFragment, SaleOrderProfileFragment.SALE_ORDER_PROFILE_FRAG_TAG)
+                            .replace(R.id.clMain, saleOrderDetailFragmen, SaleOrderProfileFragment.SALE_ORDER_PROFILE_FRAG_TAG)
                             .commit()
                 }
 

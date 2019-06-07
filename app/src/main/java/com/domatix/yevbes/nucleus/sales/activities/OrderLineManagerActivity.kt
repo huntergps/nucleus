@@ -25,8 +25,6 @@ import com.rd.PageIndicatorView
 
 
 class OrderLineManagerActivity : AppCompatActivity(), FragmentToActivityListener {
-
-
     companion object {
         const val SELECTED_LIST = "SalesManagerSelectedList"
         const val SELECTED_LIST_POSITION = "SalesManagerSelectedListPosition"
@@ -128,7 +126,6 @@ class OrderLineManagerActivity : AppCompatActivity(), FragmentToActivityListener
             val hashMap = HashMap<Int, SaleOrderLine>()
             val count = selectedItems.size - 1
             //selectedSaleOrderLineItems.clear()
-
 
             for (i in 0.rangeTo(count)) {
                 val fm = supportFragmentManager.findFragmentByTag("android:switcher:" + R.id.viewPager + ":" + i)

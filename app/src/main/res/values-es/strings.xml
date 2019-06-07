@@ -433,6 +433,14 @@
     <string name="english_language">Inglés</string>
     <string name="spanish_language">Español</string>
     <string name="set_default_language_text">Selecciona el lenguaje deseado:</string>
-    <string name="choose_customer">Por favor elija un cliente</string>
     <!-- -->
+
+    <string name="choose_customer">Por favor elija un cliente</string>
+    <string name="loading_data">Cargando los datos desde Odoo</string>
+    <string name="loading_discount_policy">Cargando la política de descuentos desde Odoo</string>
+    <string name="remove_element">Eliminar elemento</string>
+    <string name="remove_element_message">Estas seguro que quieres eliminar el elemento: %1$s?</string>
+    <string name="removed_element_message">Elemento %1$s eliminado.</string>
+    <string name="qty_updated">Cantidad actualizada correctamente</string>
+    <string name="qty_wrong">Cantidad erronea</string>
 </resources>

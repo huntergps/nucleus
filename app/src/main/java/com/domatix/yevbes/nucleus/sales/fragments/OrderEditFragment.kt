@@ -5,15 +5,15 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
@@ -22,19 +22,20 @@ import com.airbnb.lottie.LottieDrawable
 import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.FragmentOrderEditBinding
-import com.domatix.yevbes.nucleus.generic.callbacs.OnDialogViewCreatedListener
+import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterItemClickListener
+import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogButtonsClickListener
+import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogStartListener
 import com.domatix.yevbes.nucleus.generic.ui.dialogs.LoadingDialogFragment
 import com.domatix.yevbes.nucleus.products.entities.ProductProduct
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
 import com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity
 import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
-import com.domatix.yevbes.nucleus.sales.adapters.OrderLinesAdapter
+import com.domatix.yevbes.nucleus.sales.adapters.OrderEditAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
 import com.domatix.yevbes.nucleus.sales.entities.ProductPricelist
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrderLine
-import com.domatix.yevbes.nucleus.sales.interfaces.LongShortOrderItemClick
 import com.domatix.yevbes.nucleus.utils.MyProgressDialog
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -45,6 +46,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -98,21 +100,14 @@ class OrderEditFragment : Fragment() {
     private val saleOrderLineListType = object : TypeToken<ArrayList<SaleOrderLine>>() {}.type
     private val productPricelistType = object : TypeToken<ProductPricelist>() {}.type
 
-
+    lateinit var removedItemsIdList: HashSet<Int> private set
     lateinit var addedItems: ArrayList<SaleOrderLine> private set
     lateinit var selectedSaleOrderLineItems: ArrayList<SaleOrderLine> private set
-    lateinit var deletedItemsIdList: ArrayList<Int> private set
     lateinit var myProgressDialog: MyProgressDialog private set
     lateinit var progressDialog: ProgressDialog private set
 
     private lateinit var dialogFragment: LoadingDialogFragment
-
-
     private var idCustomer: Int? = null
-
-
-    //lateinit var aux: ArrayList<SaleOrderLine> private set
-
     lateinit var binding: FragmentOrderEditBinding
     private lateinit var saleOrderGsonAsAString: String
 
@@ -120,19 +115,16 @@ class OrderEditFragment : Fragment() {
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
     lateinit var activity: SaleDetailActivity private set
-
     private var saleOrder: SaleOrder? = null
 
-    private val mAdapter: OrderLinesAdapter by lazy {
-        OrderLinesAdapter(this, arrayListOf(), object : LongShortOrderItemClick {
-            override fun onItemClick(view: View) {
+    private val mAdapter: OrderEditAdapter by lazy {
+        OrderEditAdapter(binding.saleOrderLineRecyclerView, arrayListOf(), object : OnShortLongAdapterItemClickListener {
+            override fun onShortAdapterItemPressed(view: View) {
                 val position = binding.saleOrderLineRecyclerView.getChildAdapterPosition(view)
-
                 val intent = Intent(activity, OrderLineManagerActivity::class.java)
-
                 val bundle = Bundle()
-                val aux = ArrayList<SaleOrderLine>()
 
+                val aux = ArrayList<SaleOrderLine>()
                 aux.addAll(selectedSaleOrderLineItems)
                 aux.addAll(addedItems)
 
@@ -140,51 +132,53 @@ class OrderEditFragment : Fragment() {
                 bundle.putInt(OrderLineManagerActivity.SELECTED_LIST_POSITION, position)
                 intent.putExtras(bundle)
 
-                startActivityForResult(intent, OrderEditFragment.SALES_MANAGER_REQUEST_CODE)
+                startActivityForResult(intent, SALES_MANAGER_REQUEST_CODE)
                 Timber.v("ITEM_CLICKED_$position")
-                //startActivityForResult(intent, OrderEditFragment.REQUEST_CODE)
             }
 
-            override fun onLongItemClick(view: View) {
-                val items = arrayOf(getString(R.string.remove_sale_order_line))
+            override fun onLongAdapterItemPressed(view: View) {
+                val position = binding.saleOrderLineRecyclerView.getChildAdapterPosition(view)
+                val item = mAdapter.items[position] as SaleOrderLine
 
-                val builder = AlertDialog.Builder(ContextThemeWrapper(activity, R.style.AlertDialog))
-                builder.setTitle(getString(R.string.select_action))
-                // Set items form alert dialog
-                builder.setItems(items) { _, which ->
-                    when (which) {
-                        0 -> {
-                            val position = binding.saleOrderLineRecyclerView.getChildAdapterPosition(view)
+                dialogFragment.showDialog()
+                dialogFragment.setOnDialogStartListener(object : OnDialogStartListener {
+                    override fun onDialogStarted() {
+                        dialogFragment.setTilte(getString(R.string.remove_element))
+                        dialogFragment.setMessage(String.format(resources.getString(R.string.remove_element_message), item.name))
 
-/*
-                            lateinit var addedItems: ArrayList<SaleOrderLine> private set
-                            lateinit var selectedSaleOrderLineItems: ArrayList<SaleOrderLine> private set*/
+                        dialogFragment.setAnimation("removing.json", true, maxFrame = 57, loop = false)
+                        dialogFragment.isVisibleDialogButtons(true)
+                        dialogFragment.setCancelableDialog(true)
 
-                            if (position <= selectedSaleOrderLineItems.size - 1) {
-                                deletedItemsIdList.add(selectedSaleOrderLineItems.removeAt(position).id)
-                            } else {
-                                val aux = position - selectedSaleOrderLineItems.size
-                                addedItems.removeAt(aux)
+                        dialogFragment.setOnDialogButtonsClickListener(object : OnDialogButtonsClickListener {
+                            override fun onPositiveButtonPressed() {
+                                val removedItem = mAdapter.removeSaleOrderLineRowItem(position)
+                                val id = removedItem.id
+                                if (id != 0) {
+                                    removedItemsIdList.add(id)
+                                }
+
+                                dialogFragment.dismissDialog()
+
+                                Snackbar.make(binding.root, String.format(resources.getString(R.string.removed_element_message), removedItem.name), Snackbar.LENGTH_LONG)
+                                        .setActionTextColor(ContextCompat.getColor(activity, R.color.colorAccent))
+                                        .setAction(R.string.undo) {
+                                            mAdapter.restoreItem(removedItem, position)
+                                            if (id != 0) {
+                                                removedItemsIdList.remove(id)
+                                            }
+                                        }
+                                        .show()
                             }
-                            mAdapter.removeItem(position)
-                        }
+
+                            override fun onNegativeButtonPressed() {
+                                dialogFragment.dismissDialog()
+                            }
+                        })
                     }
-                }
-
-
-                val dialog = builder.create()
-
-                val divierId = resources.getIdentifier("android:id/titleDivider", null, null)
-                val divider = dialog.findViewById<View>(divierId)
-                if (divider != null)
-                    divider!!.setBackgroundColor(resources.getColor(R.color.colorAccent))
-                dialog.show()
+                })
             }
         })
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,54 +190,36 @@ class OrderEditFragment : Fragment() {
             val saleOrderGson = Gson()
             saleOrder = saleOrderGson.fromJson(saleOrderGsonAsAString, SaleOrder::class.java)
         }
+
         addedItems = ArrayList()
-        deletedItemsIdList = ArrayList()
+        removedItemsIdList = HashSet()
         progressDialog = ProgressDialog(context)
         //aux = ArrayList()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_sale_order_profile, container, false)
-        // Inflate the layout for this fragment
+
         compositeDisposable = CompositeDisposable()
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_order_edit, container, false)
+        return binding.root
+    }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        activity = getActivity() as SaleDetailActivity
+        activity.title = getString(R.string.sale_name_title, saleOrder!!.name)
 
         val mLayoutManager = LinearLayoutManager(context)
         binding.saleOrderLineRecyclerView.layoutManager = mLayoutManager
         binding.saleOrderLineRecyclerView.itemAnimator = DefaultItemAnimator()
-
-        //binding.tb.setTitle(R.string.action_sales)
-
-        fetchSaleOrderLines("order_id", saleOrder!!.id)
-
         mAdapter.setupScrollListener(binding.saleOrderLineRecyclerView)
-
-
-        val date = fromStringToDate(saleOrder!!.dateOrder, "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val dateOrder = getDateToFriendlyFormat(date, "dd MMM", Locale.getDefault(), TimeZone.getTimeZone("GMT+01:00")).toLowerCase()
-        val amountTotal = "%.2f".format(saleOrder!!.amountTotal).replace('.', '%').replace(',', '.').replace('%', ',')
-        val amountUntaxed = "%.2f".format(saleOrder!!.amountUntaxed).replace('.', '%').replace(',', '.').replace('%', ',')
-        val amountTax = "%.2f".format(saleOrder!!.amountTax).replace('.', '%').replace(',', '.').replace('%', ',')
-        val state = saleStates(saleOrder!!.state, this)
 
         partnerInvoiceId = saleOrder!!.partnerInvoiceId.asJsonArray.get(0).asInt
         partnerShippingId = saleOrder!!.partnerShippingId.asJsonArray.get(0).asInt
         idCustomer = saleOrder!!.partnerId.asJsonArray.get(0).asInt
 
-        binding.saleOrderObj = saleOrder
-        binding.stateString = state
-        binding.dateOrderString = dateOrder
-        binding.amountUntaxedString = amountUntaxed
-        binding.amountTaxString = amountTax
-        binding.amountTotalString = amountTotal
-        binding.termsString = saleOrder!!.terms
-        binding.partnerIdString = jsonElementToString(saleOrder!!.partnerId)
-        binding.partnerInvoiceAddressString = jsonElementToString(saleOrder!!.partnerInvoiceId)
-        binding.partnerShippingAddressString = jsonElementToString(saleOrder!!.partnerShippingId)
-
+        binding.saleOrder = saleOrder
         binding.saleOrderLineRecyclerView.adapter = mAdapter
 
         binding.buttonAddOrderSalesLine.setOnClickListener {
@@ -272,23 +248,8 @@ class OrderEditFragment : Fragment() {
                 repeatCount = LottieDrawable.INFINITE,
                 cancelable = false)
 
-//        val actionBar = activity.supportActionBar
-        /*  if (actionBar != null) {
-              actionBar.setHomeButtonEnabled(true)
-              actionBar.setDisplayHomeAsUpEnabled(true)
-          }
-
-          activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
-
-
-          drawerToggle = ActionBarDrawerToggle(activity, activity.binding.dl,
-                  binding.tb, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-          activity.binding.dl.addDrawerListener(drawerToggle)
-          drawerToggle.syncState()*/
-
         setOnClickListeners(binding)
-
-        return binding.root
+        fetchSaleOrderLines("order_id", saleOrder!!.id)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -298,15 +259,10 @@ class OrderEditFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
-        super.onStart()
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.dispose()
-//        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = false
     }
 
     private fun setOnClickListeners(binding: FragmentOrderEditBinding) {
@@ -358,7 +314,7 @@ class OrderEditFragment : Fragment() {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
 
-                        selectedItemsJSONString = data?.getStringExtra(OrderEditFragment.SELECTED_LIST)!!
+                        selectedItemsJSONString = data?.getStringExtra(SELECTED_LIST)!!
                         val selectedItemsGson = Gson()
 
                         val auxSaleOrderLineList = ArrayList<SaleOrderLine>()
@@ -387,7 +343,7 @@ class OrderEditFragment : Fragment() {
                         }
 
                         addedItems.addAll(auxSaleOrderLineList)
-                        mAdapter.addRowItems(auxSaleOrderLineList)
+                        mAdapter.addSaleOrderLineRowItems(auxSaleOrderLineList)
                         mAdapter.hideEmpty()
                         mAdapter!!.hideError()
                         mAdapter!!.hideMore()
@@ -475,8 +431,8 @@ class OrderEditFragment : Fragment() {
                         /*selectedSaleOrderLineItems.addAll(selectedItemsGson.fromJson(selectedItemsJSONString, object : TypeToken<ArrayList<SaleOrderLine>>() {
                         }.type))*/
                         mAdapter.clear()
-                        mAdapter.addRowItems(selectedSaleOrderLineItems)
-                        mAdapter.addRowItems(addedItems)
+                        mAdapter.addSaleOrderLineRowItems(selectedSaleOrderLineItems)
+                        mAdapter.addSaleOrderLineRowItems(addedItems)
                         mAdapter.hideEmpty()
                         mAdapter!!.hideError()
                         mAdapter!!.hideMore()
@@ -493,11 +449,11 @@ class OrderEditFragment : Fragment() {
     private fun checkForDiscountPolicy(pricelistId: Int) {
         // Lock main thread
         dialogFragment.showDialog()
-        dialogFragment.setOnDialogViewCreatedListener(object: OnDialogViewCreatedListener{
-            override fun onDialogViewCreated() {
-                dialogFragment.setTilte("Loading data from Odoo")
-                dialogFragment.setMessage("Loading discount policy from Odoo")
-                dialogFragment.setAnimation("loading.json",true, true, LottieDrawable.INFINITE)
+        dialogFragment.setOnDialogStartListener(object : OnDialogStartListener {
+            override fun onDialogStarted() {
+                dialogFragment.setTilte(getString(R.string.loading_data))
+                dialogFragment.setMessage(getString(R.string.loading_discount_policy))
+                dialogFragment.setAnimation("loading.json", true, loop = true, repeatCount = LottieDrawable.INFINITE)
             }
         })
 
@@ -549,9 +505,9 @@ class OrderEditFragment : Fragment() {
         val yearCal = c.get(Calendar.YEAR)
 
         var actualMonth: Int
-        var formattedDay: String = ""
-        var formattedMonth: String = ""
-        var formattedYear: Int = 2019
+        var formattedDay: String
+        var formattedMonth: String
+        var formattedYear: Int
 
         val getDate = DatePickerDialog(context, DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             /*          actualMonth = month + 1
@@ -624,25 +580,14 @@ class OrderEditFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_confirm -> {
-                // Add new orderlines to DB modified inclusive
-                // Modify all modified
-
-                // Add new order lines
-                //for (index in selectedSaleOrderLineItems.size until aux.size) {
-//                addOrderLinesToDB(saleOrder?.id!!, addedItems)
-                // }
-                if (deletedItemsIdList.isNotEmpty()) {
+                if (removedItemsIdList.isNotEmpty()) {
                     myProgressDialog = MyProgressDialog(progressDialog, getString(R.string.applying_changes_sale_order_dialog_title), getString(R.string.please_wait_dialog_message))
-                    unlinkSaleOrderLines(deletedItemsIdList)
+//                    unlinkSaleOrderLines(removedItemsIdList)
                 } else {
                     myProgressDialog = MyProgressDialog(progressDialog, getString(R.string.applying_changes_sale_order_dialog_title), getString(R.string.please_wait_dialog_message))
                     modifyOrder(saleOrder!!.id, partnerInvoiceId!!, partnerShippingId!!, idCustomer!!, binding.terms.text.toString())
                 }
-
-                /*for (index in 0 until selectedSaleOrderLineItems.size) {
-                }*/
-//                modifyOrderLinesInDB(saleOrder?.id!!, selectedSaleOrderLineItems)
-
+                activity.isSaleOrderModified(true)
             }
             R.id.action_cancel -> {
                 showDialogOK(getString(R.string.dialog_message),
@@ -860,7 +805,7 @@ class OrderEditFragment : Fragment() {
                 listOf(
                         listOf(param1, '=', param2)
                 )
-                , mAdapter!!.rowItemCount, 0) {
+                , mAdapter!!.rowItemCount, RECORD_LIMIT) {
             onSubscribe { disposable ->
                 compositeDisposable.add(disposable)
             }
@@ -878,26 +823,21 @@ class OrderEditFragment : Fragment() {
                         val selectedItemsGson = Gson()
                         selectedItemsJSONString = selectedItemsGson.toJson(items)
 
-                        if (items.size == 0 && mAdapter!!.rowItemCount == 0) {
-                            menu.findItem(R.id.action_confirm).isEnabled = false
-//                            mAdapter!!.showEmpty()
-                        } else {
-                            menu.findItem(R.id.action_confirm).isEnabled = true
-                        }
+                        menu.findItem(R.id.action_confirm).isEnabled = !(items.size == 0 && mAdapter!!.rowItemCount == 0)
 
-                        /* if (items.size < limit) {
-                             mAdapter.removeMoreListener()
-                             if (items.size == 0 && mAdapter.rowItemCount == 0) {
-                                 mAdapter.showEmpty()
-                             }
-                         } else {
-                             if (!mAdapter.hasMoreListener()) {
-                                 mAdapter.moreListener {
-                                     fetchSales()
-                                 }
-                             }
-                         }*/
-                        mAdapter!!.addRowItems(items)
+                        if (items.size < RECORD_LIMIT) {
+                            mAdapter.removeMoreListener()
+                            if (items.size == 0 && mAdapter.rowItemCount == 0) {
+                                mAdapter.showEmpty()
+                            }
+                        } else {
+                            if (!mAdapter.hasMoreListener()) {
+                                mAdapter.moreListener {
+                                    fetchSaleOrderLines(param1, param2)
+                                }
+                            }
+                        }
+                        mAdapter!!.addSaleOrderLineRowItems(items)
                         compositeDisposable.dispose()
                         compositeDisposable = CompositeDisposable()
                     } else {
@@ -915,10 +855,6 @@ class OrderEditFragment : Fragment() {
                 mAdapter!!.finishedMoreLoading()
             }
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
     }
 }
 

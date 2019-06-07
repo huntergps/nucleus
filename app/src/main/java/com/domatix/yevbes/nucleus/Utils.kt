@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import com.domatix.yevbes.nucleus.core.Odoo
+import com.domatix.yevbes.nucleus.core.Odoo.app
 import com.domatix.yevbes.nucleus.core.OdooUser
 import com.domatix.yevbes.nucleus.core.authenticator.SplashActivity
 import com.domatix.yevbes.nucleus.core.entities.Many2One
@@ -280,22 +281,22 @@ fun parseServerDateToLocal(raw_date: String, formatDateServer: String): DateTime
     return DateTime.parse(raw_date, DateTimeFormat.forPattern(formatDateServer))
 }
 
-fun saleStates(receiveString: String, fragment: Fragment): String {
+fun saleStates(receiveString: String): String {
     when (receiveString) {
         "draft" -> {
-            return fragment.getString(R.string.quotation)
+            return app.getString(R.string.quotation)
         }
         "sent" -> {
-            return fragment.getString(R.string.quotation_sent)
+            return app.getString(R.string.quotation_sent)
         }
         "sale" -> {
-            return fragment.getString(R.string.sale_order)
+            return app.getString(R.string.sale_order)
         }
         "done" -> {
-            return fragment.getString(R.string.order_done)
+            return app.getString(R.string.order_done)
         }
         "cancel" -> {
-            return fragment.getString(R.string.order_canceled)
+            return app.getString(R.string.order_canceled)
         }
     }
     return " "
