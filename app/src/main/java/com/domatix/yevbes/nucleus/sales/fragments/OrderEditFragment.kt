@@ -22,17 +22,18 @@ import com.airbnb.lottie.LottieDrawable
 import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.FragmentOrderEditBinding
+import com.domatix.yevbes.nucleus.generic.callbacs.OnThreadFinishedListener
 import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterItemClickListener
 import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogButtonsClickListener
 import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogStartListener
-import com.domatix.yevbes.nucleus.generic.ui.dialogs.LoadingDialogFragment
-import com.domatix.yevbes.nucleus.products.entities.ProductProduct
+import com.domatix.yevbes.nucleus.generic.ui.dialogs.CustomDialogFragment
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
 import com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity
 import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.OrderEditAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
+import com.domatix.yevbes.nucleus.sales.entities.CustomProductQtyEntity
 import com.domatix.yevbes.nucleus.sales.entities.ProductPricelist
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrderLine
@@ -61,6 +62,7 @@ class OrderEditFragment : Fragment() {
 
     companion object {
         const val ORDER_EDIT_FRAG_TAG = "OrderEditFragment"
+        const val NEW_LIST_ELEMENTS = "NEW_LIST_ELEMENTS"
         const val SELECTED_LIST = "SaleOrderLineSelectedList"
         const val CUSTOMER_ID = "CustomerId"
         const val CUSTOMER_NAME = "CustomerName"
@@ -106,7 +108,7 @@ class OrderEditFragment : Fragment() {
     lateinit var myProgressDialog: MyProgressDialog private set
     lateinit var progressDialog: ProgressDialog private set
 
-    private lateinit var dialogFragment: LoadingDialogFragment
+    private lateinit var dialogFragment: CustomDialogFragment
     private var idCustomer: Int? = null
     lateinit var binding: FragmentOrderEditBinding
     private lateinit var saleOrderGsonAsAString: String
@@ -210,6 +212,17 @@ class OrderEditFragment : Fragment() {
         activity = getActivity() as SaleDetailActivity
         activity.title = getString(R.string.sale_name_title, saleOrder!!.name)
 
+        dialogFragment = CustomDialogFragment.newInstance(
+                activity,
+                fragmentManager!!,
+                showInstantly = false,
+                playAnimation = true,
+                loopAnimation = true,
+                repeatCount = LottieDrawable.INFINITE,
+                cancelable = false)
+
+        checkForDiscountPolicy(saleOrder!!.pricelistId.asJsonArray[0].asInt)
+
         val mLayoutManager = LinearLayoutManager(context)
         binding.saleOrderLineRecyclerView.layoutManager = mLayoutManager
         binding.saleOrderLineRecyclerView.itemAnimator = DefaultItemAnimator()
@@ -239,15 +252,6 @@ class OrderEditFragment : Fragment() {
 
         activity.setSupportActionBar(binding.tb)
 
-        dialogFragment = LoadingDialogFragment.newInstance(
-                activity,
-                fragmentManager!!,
-                showInstantly = false,
-                playAnimation = true,
-                loopAnimation = true,
-                repeatCount = LottieDrawable.INFINITE,
-                cancelable = false)
-
         setOnClickListeners(binding)
         fetchSaleOrderLines("order_id", saleOrder!!.id)
     }
@@ -259,10 +263,43 @@ class OrderEditFragment : Fragment() {
         }
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.dispose()
+    }
+
+    private fun getUnitPrice(tarifId: Int, productId: Int, quantity: Float, listener: OnThreadFinishedListener) {
+        var priceWithTarifa: Float? = 0f
+        Odoo.callKw(model = "product.pricelist", method = "price_get", args = listOf(tarifId,
+                productId, quantity))
+        {
+            onSubscribe { disposable ->
+                compositeDisposable.add(disposable)
+            }
+
+            onNext { response ->
+                if (response.isSuccessful) {
+                    val callKw = response.body()!!
+                    if (callKw.isSuccessful) {
+                        val result = callKw.result
+                        priceWithTarifa = result.asJsonObject[tarifId.toString()].asFloat
+                    } else {
+                        // Odoo specific error
+                        Timber.w("callkw() failed with ${callKw.errorMessage}")
+                    }
+                } else {
+                    Timber.w("request failed with ${response.code()}:${response.message()}")
+                }
+            }
+
+            onError { error ->
+                error.printStackTrace()
+            }
+
+            onComplete {
+                listener.onThreadFinished(priceWithTarifa as Any)
+            }
+        }
     }
 
     private fun setOnClickListeners(binding: FragmentOrderEditBinding) {
@@ -313,42 +350,41 @@ class OrderEditFragment : Fragment() {
             REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
-
-                        selectedItemsJSONString = data?.getStringExtra(SELECTED_LIST)!!
-                        val selectedItemsGson = Gson()
-
-                        val auxSaleOrderLineList = ArrayList<SaleOrderLine>()
-                        val auxProductProductList: ArrayList<ProductProduct>
-
-                        auxProductProductList = selectedItemsGson.fromJson(selectedItemsJSONString, object : TypeToken<java.util.ArrayList<ProductProduct>>() {
+                        val addedItemJSONString = data?.getStringExtra(NEW_LIST_ELEMENTS)
+                        val addedList = gson.fromJson<List<CustomProductQtyEntity>>(addedItemJSONString, object : TypeToken<java.util.ArrayList<CustomProductQtyEntity>>() {
                         }.type)
 
-                        for (index in 0 until auxProductProductList.size) {
-                            val jsonArray = JsonArray()
-                            jsonArray.add(auxProductProductList[index].id)
-                            jsonArray.add(auxProductProductList[index].name)
+                        val selectedItemsGson = Gson()
+                        val auxSaleOrderLineList = ArrayList<SaleOrderLine>()
+                        for (index in 0 until addedList.size) {
+                            if (isPricelistWithDiscount!!) {
+                                getUnitPrice(idPriceList!!, addedList[index].idProduct, addedList[index].quantity, object : OnThreadFinishedListener {
+                                    override fun onThreadFinished(value: Any) {
+                                        val price = value as Float
+                                        val jsonArray = JsonArray()
+                                        jsonArray.add(addedList[index].idProduct)
+                                        jsonArray.add(addedList[index].name)
 
-                            auxSaleOrderLineList.add(SaleOrderLine(
-                                    0,
-                                    auxProductProductList[index].name,
-                                    jsonArray,
-                                    auxProductProductList[index].quantity,
-                                    0f,
-                                    auxProductProductList[index].lstPrice,
-                                    0f
-                                    ,
-                                    auxProductProductList[index].lstPrice * auxProductProductList[index].quantity,
-                                    auxProductProductList[index].taxesId
-                            ))
+                                        auxSaleOrderLineList.add(SaleOrderLine(
+                                                0,
+                                                addedList[index].name,
+                                                jsonArray,
+                                                addedList[index].quantity,
+                                                0f,
+                                                addedList[index].lstPrice,
+                                                price,
+                                                addedList[index].lstPrice * addedList[index].quantity,
+                                                addedList[index].taxesId
+                                        ))
+                                        addedItems.addAll(auxSaleOrderLineList)
+                                        mAdapter.addSaleOrderLineRowItems(auxSaleOrderLineList)
+                                        addedItemsJSONString = selectedItemsGson.toJson(auxSaleOrderLineList)
+                                    }
+                                })
+                            } else {
+                                // TODO: implement get price without discount
+                            }
                         }
-
-                        addedItems.addAll(auxSaleOrderLineList)
-                        mAdapter.addSaleOrderLineRowItems(auxSaleOrderLineList)
-                        mAdapter.hideEmpty()
-                        mAdapter!!.hideError()
-                        mAdapter!!.hideMore()
-                        mAdapter.notifyDataSetChanged()
-                        addedItemsJSONString = selectedItemsGson.toJson(auxSaleOrderLineList)
                     }
 
                     Activity.RESULT_CANCELED -> {
@@ -433,10 +469,6 @@ class OrderEditFragment : Fragment() {
                         mAdapter.clear()
                         mAdapter.addSaleOrderLineRowItems(selectedSaleOrderLineItems)
                         mAdapter.addSaleOrderLineRowItems(addedItems)
-                        mAdapter.hideEmpty()
-                        mAdapter!!.hideError()
-                        mAdapter!!.hideMore()
-                        mAdapter.notifyDataSetChanged()
 
                         //selectedItemsJSONString = selectedItemsGson.toJson(selectedSaleOrderLineItems)
                     }
@@ -448,14 +480,14 @@ class OrderEditFragment : Fragment() {
 
     private fun checkForDiscountPolicy(pricelistId: Int) {
         // Lock main thread
-        dialogFragment.showDialog()
+       /* dialogFragment.showDialog()
         dialogFragment.setOnDialogStartListener(object : OnDialogStartListener {
             override fun onDialogStarted() {
                 dialogFragment.setTilte(getString(R.string.loading_data))
                 dialogFragment.setMessage(getString(R.string.loading_discount_policy))
                 dialogFragment.setAnimation("loading.json", true, loop = true, repeatCount = LottieDrawable.INFINITE)
             }
-        })
+        })*/
 
         Odoo.read(model = "product.pricelist", ids = listOf(pricelistId), fields = listOf("discount_policy")) {
             onSubscribe { disposable ->
@@ -479,17 +511,21 @@ class OrderEditFragment : Fragment() {
                     } else {
                         // Odoo specific error
                         Timber.w("read() failed with ${read.errorMessage}")
+//                        dialogFragment.dismissDialog()
                     }
                 } else {
                     Timber.w("request failed with ${response.code()}:${response.message()}")
+//                    dialogFragment.dismissDialog()
                 }
             }
+
             onError { error ->
                 error.printStackTrace()
+//                dialogFragment.dismissDialog()
             }
 
             onComplete {
-                dialogFragment.dismissDialog()
+//                dialogFragment.dismissDialog()
             }
         }
     }

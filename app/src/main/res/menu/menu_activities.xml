@@ -42,24 +42,17 @@
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
-        android:id="@+id/action_activities_sort"
-        android:icon="@drawable/ic_sort"
+        android:icon="@drawable/ic_filter"
         android:orderInCategory="300"
-        android:enabled="false"
         android:title="@string/action_sort"
-        android:visible="false"
         app:showAsAction="ifRoom">
 
         <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/action_activities_sort_type"
-                    android:title="@string/action_activities_sort_type" />
-
-                <item
-                    android:id="@+id/action_activities_sort_date"
-                    android:title="@string/action_activities_sort_date" />
-            </group>
+            <item
+                android:id="@+id/action_filter_my_activities"
+                android:checkable="true"
+                android:checked="true"
+                android:title="@string/action_filter_activities_user_id" />
         </menu>
     </item>
 

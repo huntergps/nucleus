@@ -9,6 +9,7 @@ import com.domatix.yevbes.nucleus.activities.callbacks.OnCheckClicked
 import com.domatix.yevbes.nucleus.activities.entities.Activity
 import com.domatix.yevbes.nucleus.core.utils.recycler.RecyclerBaseAdapter
 import com.domatix.yevbes.nucleus.databinding.ActivityRowBinding
+import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterItemClickListener
 import kotlinx.android.synthetic.main.activity_row.view.*
 import kotlin.collections.ArrayList
 
@@ -16,7 +17,8 @@ import kotlin.collections.ArrayList
 class ActivityDataAdapter(
         val fragment: ActivitiesFragment,
         items: ArrayList<Any>,
-        private val listener: OnCheckClicked
+        private val listener: OnCheckClicked,
+        private val clickListener: OnShortLongAdapterItemClickListener
 ) : RecyclerBaseAdapter(items, fragment.binding.activitiesRecyclerView) {
 
     companion object {
@@ -74,6 +76,10 @@ class ActivityDataAdapter(
                         parent,
                         false
                 )
+
+                binding.root.setOnClickListener {
+                    clickListener.onShortAdapterItemPressed(it)
+                }
 
                 binding.root.imageView10.setOnClickListener {
                     listener.onCheckClicked( binding.root)

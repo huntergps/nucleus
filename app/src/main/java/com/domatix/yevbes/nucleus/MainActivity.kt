@@ -33,9 +33,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         private const val REQUEST_CODE = 0
-        /*private const val ACTION_CUSTOMER = 1
-        private const val ACTION_SUPPLIER = 2
-        private const val ACTION_COMPANY = 3*/
         private const val ACTION_CONTACT = 1
         private const val ACTION_ACTIVITIES = 2
         private const val ACTION_SALES = 3
@@ -43,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         private const val ACTION_DASHBOARD_INVENTORY = 5
         const val ACTION_TRANSFERS_INVENTORY = 6
         private const val ACTION_INVENTORY_SETTINGS = 8
-//        private const val ACTION_ABOUT = 9
     }
 
     private var isInventoryExpanded = false
@@ -284,7 +280,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            loadFragment(ACTION_SALES)
+            loadFragment(ACTION_ACTIVITIES)
         }
     }
 

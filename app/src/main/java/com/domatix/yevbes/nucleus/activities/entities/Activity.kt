@@ -2,10 +2,17 @@ package com.domatix.yevbes.nucleus.activities.entities
 
 import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
+import android.support.annotation.NonNull
 import android.support.v7.content.res.AppCompatResources.getDrawable
 import android.view.View
+import android.webkit.WebView
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.BaseTarget
+import com.bumptech.glide.request.target.SizeReadyCallback
+import com.bumptech.glide.request.transition.Transition
 import com.domatix.yevbes.nucleus.DateUtils
 import com.domatix.yevbes.nucleus.R
 import com.domatix.yevbes.nucleus.asManyToOne
@@ -14,16 +21,16 @@ import com.google.gson.JsonElement
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.reactivex.disposables.CompositeDisposable
+import io.square1.richtextlib.ui.RichContentView
+import io.square1.richtextlib.v2.RichTextV2
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormat
 import org.ocpsoft.prettytime.PrettyTime
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter
+import org.sufficientlysecure.htmltextview.HtmlTextView
 import java.text.SimpleDateFormat
 import java.util.*
-
-
-
-
 
 
 data class Activity(
@@ -64,11 +71,43 @@ data class Activity(
         val resName: String,
 
         @Expose
+        @SerializedName("create_uid")
+        val createUid: JsonElement,
+
+        @Expose
         @SerializedName("calendar_event_id")
         val calendarEventId: JsonElement
 ) {
 
     companion object {
+        @JvmStatic
+        @BindingAdapter("htmlText")
+        fun setHtmlText(view: HtmlTextView, text: String) {
+            val txt = text.replace("<img src=\"", "<img src=\"" + Odoo.protocol.toString().toLowerCase() + "://" + Odoo.host.toLowerCase())
+            view.setHtml(txt, HtmlHttpImageGetter(view))
+         /*   val element = RichTextV2.textFromHtml(Odoo.app, txt)
+            view.setText(element)
+            view.setUrlBitmapDownloader { urlBitmapSpan, image ->
+                Glide.with(Odoo.app)
+                        .load(image)
+                        .into(object : BaseTarget<Drawable>() {
+                            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+                                urlBitmapSpan.updateBitmap(Odoo.app, resource)
+                            }
+
+                            override fun getSize(@NonNull cb: SizeReadyCallback) {
+                                cb.onSizeReady(urlBitmapSpan.possibleSize.width(), urlBitmapSpan.possibleSize.height())
+                            }
+
+                            override fun removeCallback(@NonNull cb: SizeReadyCallback) {
+
+                            }
+                        })
+
+            }*/
+        }
+
+
         @JvmStatic
         @BindingAdapter("textDate")
         fun setDateText(view: Button, item: Activity) {
@@ -147,7 +186,7 @@ data class Activity(
 
         @JvmStatic
         @BindingAdapter("durationText")
-        fun setDurationText(view: TextView, item: Activity){
+        fun setDurationText(view: TextView, item: Activity) {
             if (!item.calendarEventId.isJsonPrimitive) {
                 val idEventCalendar = item.calendarEventId.asManyToOne.id
 
@@ -196,7 +235,7 @@ data class Activity(
 
         @JvmField
         val fieldsMap: Map<String, String> = mapOf(
-                "id" to "id", "summary" to "Summary", "note" to "Description", "date_deadline" to "Deadline",
+                "id" to "id", "create_uid" to "create_uid", "summary" to "Summary", "note" to "Description", "date_deadline" to "Deadline",
                 "user_id" to "User ID", "res_model_id" to "res Model ID", "res_id" to "Document ID", "activity_type_id" to "Activity Type ID", "res_name" to "Document Name",
                 "calendar_event_id" to "Calendar Event")
 

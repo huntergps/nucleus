@@ -35,12 +35,10 @@ class CustomerProfileActivity : AppCompatActivity(), PersistDataListener, IPickR
         onBackPressed()
     }
 
-
     lateinit var binding: ActivityCustomerProfileBinding
     private var imgBitmapActual: Bitmap? = null
     private lateinit var country: Country
     private lateinit var company: Company
-
 
     companion object {
         const val CUSTOMER_OBJECT = "customer"
@@ -50,7 +48,6 @@ class CustomerProfileActivity : AppCompatActivity(), PersistDataListener, IPickR
         const val COMPANY_REQUEST_CODE = 1
         const val COUNTRY_REQUEST_CODE = 2
         const val REQUEST_ID_MULTIPLE_PERMISSIONS = 1
-
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {

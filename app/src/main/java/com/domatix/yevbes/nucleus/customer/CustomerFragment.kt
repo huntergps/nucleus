@@ -12,7 +12,6 @@ import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.customer.entities.Customer
 import com.domatix.yevbes.nucleus.databinding.FragmentCustomerBinding
-import com.domatix.yevbes.nucleus.generic.ui.dialogs.LoadingDialogFragment
 import com.domatix.yevbes.nucleus.utils.PreferencesManager
 import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Nucleus</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="ok">Ok</string>
@@ -443,4 +443,8 @@
     <string name="removed_element_message">Elemento %1$s eliminado.</string>
     <string name="qty_updated">Cantidad actualizada correctamente</string>
     <string name="qty_wrong">Cantidad erronea</string>
+    <string name="error">Error!</string>
+    <string name="retry">Reintentar</string>
+    <string name="action_filter_activities_user_id">Mis actividades</string>
+    <string name="loading" tools:override="true">Cargando</string>
 </resources>

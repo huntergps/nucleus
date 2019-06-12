@@ -68,7 +68,6 @@ data class ProductProduct(
 ) {
 
     companion object {
-
         @JvmStatic
         @BindingAdapter("productType")
         fun setProductypeText(view: TextView, type: JsonElement) {

@@ -3,6 +3,7 @@ package com.domatix.yevbes.nucleus.activities
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
@@ -17,10 +18,12 @@ import android.support.v7.widget.SearchView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import com.domatix.yevbes.nucleus.*
+import com.domatix.yevbes.nucleus.activities.activities.DetailActivityActivity
 import com.domatix.yevbes.nucleus.activities.callbacks.OnCheckClicked
 import com.domatix.yevbes.nucleus.activities.entities.Activity
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.FragmentActivitiesBinding
+import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterItemClickListener
 import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
@@ -30,6 +33,12 @@ import timber.log.Timber
  * A simple [Fragment] subclass.
  *
  */
+const val ACTIVITY_ITEM = "ACTIVITY_ITEM"
+const val ACTIVITY_ITEM_ID = "ACTIVITY_ITEM_ID"
+const val ACTIVITY_ITEM_NAME = "ACTIVITY_ITEM_NAME"
+const val ACTIVITY_ITEM_POSITION = "ACTIVITY_ITEM_POSITION"
+const val REQUEST_CODE = 1
+
 class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, SearchView.OnQueryTextListener {
 
     companion object {
@@ -54,8 +63,8 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
     private var coordinatorLayout: CoordinatorLayout? = null
     private var filterMenu: Menu? = null
     private var sortByMenu: Menu? = null
-
     private lateinit var activityType: ActivityType
+    private var isFilterActive: Boolean = true
 
     private val mAdapter: ActivityDataAdapter by lazy {
         ActivityDataAdapter(this, arrayListOf(), object : OnCheckClicked {
@@ -65,6 +74,21 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                 val name = jsonElementToString(item.activityTypeId) + ": " + item.summary.trimFalse()
                 checkActivityAsDone(item.id, name, position)
             }
+        }, object : OnShortLongAdapterItemClickListener {
+            override fun onShortAdapterItemPressed(view: View) {
+                val position = binding.activitiesRecyclerView.getChildAdapterPosition(view)
+                val item = mAdapter.items[position] as Activity
+                val activityGsonString = gson.toJson(item)
+                val data = Intent(activity, DetailActivityActivity::class.java)
+                data.putExtra(ACTIVITY_ITEM, activityGsonString)
+                data.putExtra(ACTIVITY_ITEM_POSITION, position)
+                startActivityForResult(data, REQUEST_CODE)
+            }
+
+            override fun onLongAdapterItemPressed(view: View) {
+                // Nothing
+            }
+
         })
     }
 
@@ -72,6 +96,28 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
     lateinit var binding: FragmentActivitiesBinding private set
     lateinit var compositeDisposable: CompositeDisposable private set
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_CODE -> {
+                when (resultCode) {
+                    android.app.Activity.RESULT_OK -> {
+                        val id = data?.getIntExtra(ACTIVITY_ITEM_ID, -1)
+                        val name = data?.getStringExtra(ACTIVITY_ITEM_NAME)
+                        val position = data?.getIntExtra(ACTIVITY_ITEM_POSITION, -1)
+
+                        if (position != -1 && id != -1) {
+                            checkActivityAsDone(id!!, name!!, position!!)
+                        }
+                    }
+
+                    android.app.Activity.RESULT_CANCELED -> {
+
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -239,39 +285,12 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
         val searchView = searchItem?.actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity()?.componentName))
         searchView.setOnQueryTextListener(this)
-        /*   searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-               override fun onQueryTextSubmit(query: String?): Boolean {
-                   mAdapter.getFilter().filter(query)
-                   return false
-               }
-
-               override fun onQueryTextChange(newText: String?): Boolean {
-                   mAdapter.getFilter().filter(newText)
-                   return false
-               }
-
-           })*/
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.action_filter_activities -> {
-
-            }
-            R.id.action_activities_search -> {
-
-            }
-            R.id.action_activities_sort -> {
-
-            }
-            R.id.action_activities_sort_type -> {
-                fetchActivities("activity_type_id")
-            }
-            R.id.action_activities_sort_date -> {
-                fetchActivities("date_deadline")
-            }
-            else -> {
+            R.id.action_filter_my_activities -> {
 
             }
         }
@@ -282,7 +301,13 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
         Odoo.searchRead("mail.activity", Activity.fields,
                 when (activityType) {
                     ActivityType.Activity -> {
-                        listOf()
+                        if (isFilterActive) {
+                            listOf(
+                                    listOf("user_id", '=', Odoo.user.id)
+                            )
+                        } else {
+                            listOf()
+                        }
                     }
                 }
                 , mAdapter.rowItemCount, RECORD_LIMIT, "$filterType ASC") {
@@ -339,8 +364,10 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                     ActivityType.Activity -> {
                         listOf(
                                 "|",
+                                "|",
                                 listOf("summary", "ilike", query),
-                                listOf("note", "ilike", query)
+                                listOf("note", "ilike", query),
+                                listOf("res_name", "ilike", query)
                         )
                     }
                 }

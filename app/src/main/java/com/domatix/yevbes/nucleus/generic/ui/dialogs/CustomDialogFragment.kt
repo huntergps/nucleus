@@ -29,7 +29,7 @@ private const val ARG_PARAM8 = "param8"
 private const val ARG_PARAM9 = "param9"
 private const val ARG_PARAM10 = "param10"
 
-class LoadingDialogFragment : DialogFragment() {
+class CustomDialogFragment : DialogFragment() {
     private var onDialogDetachListener: OnDialogDetachListener? = null
     private var onDialogViewCreatedListener: OnDialogStartListener? = null
     private var onDialogButtonsClickListener: OnDialogButtonsClickListener? = null
@@ -43,12 +43,14 @@ class LoadingDialogFragment : DialogFragment() {
     private lateinit var tvMessage: TextView
     private lateinit var lottieAnimationView: LottieAnimationView
     private lateinit var linearLayoutButtons: LinearLayout
+    private lateinit var positiveButton: Button
+    private lateinit var negativeButton: Button
 
     companion object {
         fun newInstance(context: Context, manager: FragmentManager, tag: String = "TAG",
                         title: String = "TITLE", message: String = "MESSAGE", animation: String = "loading.json", showInstantly: Boolean = true,
                         playAnimation: Boolean = true, minFrame: Int = 0, maxFrame: Int = -1, loopAnimation: Boolean = true, repeatCount: Int = LottieDrawable.INFINITE, cancelable: Boolean = true, visibleButtons: Boolean = false) =
-                LoadingDialogFragment().apply {
+                CustomDialogFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, title)
                         putString(ARG_PARAM2, message)
@@ -84,6 +86,8 @@ class LoadingDialogFragment : DialogFragment() {
         tvMessage = v.findViewById(R.id.custom_dialog_message)
         lottieAnimationView = v.findViewById(R.id.custom_dialog_animation)
         linearLayoutButtons = v.findViewById(R.id.layout_buttons_cancel_confirm)
+        positiveButton = v.findViewById<Button>(R.id.positive_button)
+        negativeButton = v.findViewById<Button>(R.id.negative_button)
 
         val dialog = builder.create()
 
@@ -97,12 +101,12 @@ class LoadingDialogFragment : DialogFragment() {
                 linearLayoutButtons.visibility = View.VISIBLE
             }
 
-            v.findViewById<Button>(R.id.positive_button).setOnClickListener {
+            positiveButton.setOnClickListener {
                 if (onDialogButtonsClickListener != null)
                     onDialogButtonsClickListener?.onPositiveButtonPressed()
             }
 
-            v.findViewById<Button>(R.id.negative_button).setOnClickListener {
+            negativeButton.setOnClickListener {
                 if (onDialogButtonsClickListener != null)
                     onDialogButtonsClickListener?.onNegativeButtonPressed()
             }
@@ -143,6 +147,11 @@ class LoadingDialogFragment : DialogFragment() {
 
     fun setMessage(message: String) {
         tvMessage.text = message
+    }
+
+    fun setButtonsText(negative: String = negativeButton.text.toString(), positive: String= positiveButton.text.toString()) {
+        negativeButton.text = negative
+        positiveButton.text = positive
     }
 
     fun setAnimation(animation: String, playAnimation: Boolean, minFrame: Int = 0, maxFrame: Int = -1, loop: Boolean, repeatCount: Int = LottieDrawable.INFINITE) {
