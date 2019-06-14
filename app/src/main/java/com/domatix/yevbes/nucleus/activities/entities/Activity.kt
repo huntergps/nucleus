@@ -2,27 +2,22 @@ package com.domatix.yevbes.nucleus.activities.entities
 
 import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
-import android.support.annotation.NonNull
 import android.support.v7.content.res.AppCompatResources.getDrawable
+import android.support.v7.widget.CardView
 import android.view.View
-import android.webkit.WebView
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.BaseTarget
-import com.bumptech.glide.request.target.SizeReadyCallback
-import com.bumptech.glide.request.transition.Transition
+import android.widget.*
 import com.domatix.yevbes.nucleus.DateUtils
 import com.domatix.yevbes.nucleus.R
 import com.domatix.yevbes.nucleus.asManyToOne
 import com.domatix.yevbes.nucleus.core.Odoo
+import com.domatix.yevbes.nucleus.generic.models.CalendarEvent
+import com.domatix.yevbes.nucleus.gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable
-import io.square1.richtextlib.ui.RichContentView
-import io.square1.richtextlib.v2.RichTextV2
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormat
@@ -81,30 +76,73 @@ data class Activity(
 
     companion object {
         @JvmStatic
+        @BindingAdapter("setVisibility")
+        fun setVisibility(view: CardView, item: Activity) {
+            if (!item.calendarEventId.isJsonPrimitive) {
+                view.visibility = View.VISIBLE
+            }
+        }
+
+        @JvmStatic
+        @BindingAdapter("setAttendees")
+        fun setAttendees(lv: ListView, item: Activity) {
+            if (!item.calendarEventId.isJsonPrimitive) {
+                val compositeDisposable = CompositeDisposable()
+                var calendarEvent: CalendarEvent? = null
+                var arrayOfPartners: JsonArray? = null
+                Odoo.load(id = item.calendarEventId.asJsonArray[0].asInt, model = "calendar.event", fields = CalendarEvent.fields) {
+                    onSubscribe {
+                        compositeDisposable.add(it)
+                    }
+
+                    onNext { response ->
+                        if (response.isSuccessful) {
+                            val load = response.body()!!
+                            if (load.isSuccessful) {
+                                val result = load.result
+                                calendarEvent = gson.fromJson<CalendarEvent>(result.value, object : TypeToken<CalendarEvent>() {
+                                }.type)
+                            }
+                        }
+                    }
+
+                    onComplete {
+                        calendarEvent?.let {
+                            val listIds = gson.fromJson<List<Int>>(it.partnerIds.asJsonArray, object : TypeToken<List<Int>>() {
+
+                            }.type)
+                            Odoo.read(model = "res.partner", ids = listIds, fields = listOf("id", "display_name")) {
+                                onSubscribe { disposable ->
+                                    compositeDisposable.add(disposable)
+                                }
+
+                                onNext { response ->
+                                    if (response.isSuccessful) {
+                                        val read = response.body()!!
+                                        if (read.isSuccessful) {
+                                            val result = read.result
+                                            arrayOfPartners = result.asJsonArray
+                                            arrayOfPartners?.let {
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @JvmStatic
         @BindingAdapter("htmlText")
         fun setHtmlText(view: HtmlTextView, text: String) {
             val txt = text.replace("<img src=\"", "<img src=\"" + Odoo.protocol.toString().toLowerCase() + "://" + Odoo.host.toLowerCase())
             view.setHtml(txt, HtmlHttpImageGetter(view))
-         /*   val element = RichTextV2.textFromHtml(Odoo.app, txt)
-            view.setText(element)
-            view.setUrlBitmapDownloader { urlBitmapSpan, image ->
-                Glide.with(Odoo.app)
-                        .load(image)
-                        .into(object : BaseTarget<Drawable>() {
-                            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-                                urlBitmapSpan.updateBitmap(Odoo.app, resource)
-                            }
-
-                            override fun getSize(@NonNull cb: SizeReadyCallback) {
-                                cb.onSizeReady(urlBitmapSpan.possibleSize.width(), urlBitmapSpan.possibleSize.height())
-                            }
-
-                            override fun removeCallback(@NonNull cb: SizeReadyCallback) {
-
-                            }
-                        })
-
-            }*/
+            if (view.text.toString().isBlank()) {
+                view.text = Odoo.app.getString(R.string.note)
+            }
         }
 
 

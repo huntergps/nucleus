@@ -447,4 +447,5 @@
     <string name="retry">Reintentar</string>
     <string name="action_filter_activities_user_id">Mis actividades</string>
     <string name="loading" tools:override="true">Cargando</string>
+    <string name="attendees">Asistentes</string>
 </resources>

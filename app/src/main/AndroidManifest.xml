@@ -27,10 +27,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".generic.detailCards.ContactDetailActivity"
+        <activity android:name=".generic.detailCards.SaleDetailActivity"></activity>
+        <activity
+            android:name=".generic.detailCards.ContactDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.activities.DetailActivityActivity"
             android:screenOrientation="portrait"

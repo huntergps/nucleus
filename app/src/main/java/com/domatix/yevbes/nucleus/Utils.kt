@@ -2,6 +2,7 @@ package com.domatix.yevbes.nucleus
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -10,8 +11,8 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
 import android.support.v4.app.TaskStackBuilder
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
@@ -19,6 +20,9 @@ import android.text.Spanned
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.core.Odoo.app
 import com.domatix.yevbes.nucleus.core.OdooUser
@@ -26,6 +30,8 @@ import com.domatix.yevbes.nucleus.core.authenticator.SplashActivity
 import com.domatix.yevbes.nucleus.core.entities.Many2One
 import com.domatix.yevbes.nucleus.core.entities.session.authenticate.AuthenticateResult
 import com.domatix.yevbes.nucleus.core.utils.encryptAES
+import com.domatix.yevbes.nucleus.generic.detailCards.ContactDetailActivity
+import com.domatix.yevbes.nucleus.generic.detailCards.MODEL_ITEM_ID
 import com.google.gson.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -302,7 +308,7 @@ fun saleStates(receiveString: String): String {
     return " "
 }
 
-fun isJsonElementOdooIdNull(jsonElement: JsonElement) : Boolean{
+fun isJsonElementOdooIdNull(jsonElement: JsonElement): Boolean {
     return jsonElement.isJsonNull || jsonElement.isJsonPrimitive
 }
 
@@ -378,7 +384,39 @@ fun setStartMargin(view: View, startMargin: Float) {
     val layoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
     layoutParams.setMargins(Math.round(startMargin), layoutParams.topMargin, layoutParams.rightMargin, layoutParams.bottomMargin)
     view.layoutParams = layoutParams
-
 }
+
+/* ------------------------- Details Activity Listeners ------------------------- */
+fun modelDetailsListener(id: Int,
+                         activity: Activity,
+                         view: View,
+                         model: String): View.OnClickListener = View.OnClickListener {
+    when (view) {
+        is TextView -> {
+            view.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark))
+        }
+
+        is EditText -> {
+            view.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark))
+        }
+
+        is Button -> {
+            view.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark))
+        }
+    }
+
+    var intent: Intent? = null
+    when (model) {
+        "res.partner" -> {
+            intent = Intent(activity, ContactDetailActivity::class.java)
+        }
+    }
+
+    intent?.let {
+        it.putExtra(MODEL_ITEM_ID, id)
+        activity.startActivity(intent)
+    }
+}
+/* -------------------------------------------------------------------- */
 
 

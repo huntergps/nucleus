@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -93,7 +94,7 @@ class SaleOrderProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity = getActivity() as SaleDetailActivity
-        activity.title = getString(R.string.sale_name_title,saleOrder.name)
+        activity.title = getString(R.string.sale_name_title, saleOrder.name)
 
         activity.binding.abl.visibility = View.GONE
         activity.binding.nsv.visibility = View.GONE
@@ -115,8 +116,14 @@ class SaleOrderProfileFragment : Fragment() {
         if (isSaleOrderModified) {
             isSaleOrderModified = false
             updateSaleOrder()
-        }else{
+        } else {
             fetchSaleOrderLines("order_id", saleOrderId)
+        }
+
+        saleOrder.partnerId.asJsonArray?.let { partnerId ->
+            val id = partnerId.asJsonArray[0].asInt
+            binding.partnerId.setTextColor(ContextCompat.getColor(activity,R.color.colorAccent))
+            binding.partnerId.setOnClickListener(modelDetailsListener(id, activity, binding.partnerId, "res.partner"))
         }
     }
 
@@ -198,7 +205,7 @@ class SaleOrderProfileFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun isSaleOrderModified(param: Boolean){
+    fun isSaleOrderModified(param: Boolean) {
         this.isSaleOrderModified = param
     }
 
@@ -214,7 +221,6 @@ class SaleOrderProfileFragment : Fragment() {
             }
 
             onNext { response ->
-
                 if (response.isSuccessful) {
                     val searchRead = response.body()!!
                     if (searchRead.isSuccessful) {
@@ -225,18 +231,18 @@ class SaleOrderProfileFragment : Fragment() {
                         if (items.size == 0 && mAdapter.rowItemCount == 0) {
                             mAdapter.showEmpty()
                         }
-                         if (items.size < RECORD_LIMIT) {
-                             mAdapter.removeMoreListener()
-                             if (items.size == 0 && mAdapter.rowItemCount == 0) {
-                                 mAdapter.showEmpty()
-                             }
-                         } else {
-                             if (!mAdapter.hasMoreListener()) {
-                                 mAdapter.moreListener {
-                                     fetchSaleOrderLines(param1, param2)
-                                 }
-                             }
-                         }
+                        if (items.size < RECORD_LIMIT) {
+                            mAdapter.removeMoreListener()
+                            if (items.size == 0 && mAdapter.rowItemCount == 0) {
+                                mAdapter.showEmpty()
+                            }
+                        } else {
+                            if (!mAdapter.hasMoreListener()) {
+                                mAdapter.moreListener {
+                                    fetchSaleOrderLines(param1, param2)
+                                }
+                            }
+                        }
                         mAdapter.addRowItems(items)
                         compositeDisposable.dispose()
                         compositeDisposable = CompositeDisposable()
@@ -259,8 +265,8 @@ class SaleOrderProfileFragment : Fragment() {
 
     private fun updateSaleOrder() {
         Odoo.load(id = saleOrderId!!, model = "sale.order", fields = SaleOrder.fields) {
-            onSubscribe {
-                disposable -> compositeDisposable.add(disposable)
+            onSubscribe { disposable ->
+                compositeDisposable.add(disposable)
             }
             onNext { response ->
                 if (response.isSuccessful) {

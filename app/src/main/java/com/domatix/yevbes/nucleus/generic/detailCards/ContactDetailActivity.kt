@@ -4,10 +4,8 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.domatix.yevbes.nucleus.R
-import com.domatix.yevbes.nucleus.activities.activities.CUSTOMER_ID
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.customer.entities.Customer
-import com.domatix.yevbes.nucleus.databinding.ActivityCustomerProfileBinding
 import com.domatix.yevbes.nucleus.databinding.CustomerProfileActivityBinding
 import com.domatix.yevbes.nucleus.generic.ui.dialogs.CustomDialogFragment
 import com.domatix.yevbes.nucleus.gson
@@ -15,6 +13,7 @@ import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 
+const val MODEL_ITEM_ID = "MODEL_ITEM_ID"
 class ContactDetailActivity : AppCompatActivity() {
     lateinit var binding: CustomerProfileActivityBinding
     lateinit var compositeDisposable: CompositeDisposable private set
@@ -25,7 +24,7 @@ class ContactDetailActivity : AppCompatActivity() {
         compositeDisposable = CompositeDisposable()
         customDialogFragment = CustomDialogFragment.newInstance(this,supportFragmentManager,"TAG",
             getString(R.string.loading),getString(R.string.loading_data),cancelable = false,showInstantly = false)
-        val customerId = intent.extras.getInt(CUSTOMER_ID)
+        val customerId = intent.extras.getInt(MODEL_ITEM_ID)
         loadCustomerById(customerId)
     }
 

@@ -460,4 +460,5 @@
     <string name="retry">Retry</string>
     <string name="action_filter_activities_user_id">My activities</string>
     <string name="loading" tools:override="true">Loading</string>
+    <string name="attendees">Attendees</string>
 </resources>

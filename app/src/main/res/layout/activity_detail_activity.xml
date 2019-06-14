@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="com.domatix.yevbes.nucleus.UtilsKt" />
 
         <variable
@@ -73,13 +74,11 @@
                             android:id="@+id/resName"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
                             android:layout_marginEnd="8dp"
-                            android:textColor="@color/colorAccent"
                             android:text="@{UtilsKt.trimFalse(activity.resName)}"
                             app:layout_constraintEnd_toStartOf="@+id/buttonDatePicker"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/summary"
+                            app:layout_constraintTop_toTopOf="@+id/model"
                             tools:text="Document" />
 
                         <Button
@@ -89,6 +88,7 @@
                             android:background="@drawable/mybutton"
                             android:drawableStart="@drawable/ic_calendar_check_late"
                             android:fontFamily="fontFamily: sans-serif-thin"
+                            android:minWidth="65dp"
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"
                             android:textAlignment="textEnd"
@@ -98,7 +98,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:textDate="@{activity}"
-                            tools:text=" 2 days ago" />
+                            tools:text="hoy" />
 
 
                         <TextView
@@ -128,7 +128,48 @@
                             app:durationText="@{activity}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/buttonDatePicker"
-                            tools:text="Duración 10 horas" />
+                            tools:text="Duración 10 horas"
+                            tools:visibility="visible" />
+                    </android.support.constraint.ConstraintLayout>
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/default_8dp"
+                    android:padding="@dimen/default_8dp"
+                    android:visibility="gone"
+                    app:setVisibility="@{activity}"
+                    tools:visibility="visible">
+
+                    <android.support.constraint.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/default_16dp">
+
+                        <TextView
+                            android:id="@+id/attendees_lbl"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="@string/attendees"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="Assistants" />
+
+                        <ListView
+                            android:id="@+id/attendees_lv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:scrollbars="none"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/attendees_lbl"
+                            app:setAttendees="@{activity}" />
                     </android.support.constraint.ConstraintLayout>
                 </android.support.v7.widget.CardView>
 
@@ -172,26 +213,9 @@
                                 android:layout_height="wrap_content"
                                 android:textAppearance="@android:style/TextAppearance.Small"
                                 app:htmlText="@{activity.description}" />
-
-                            <!--    <io.square1.richtextlib.ui.RichContentView
-                                android:id="@+id/note"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:htmlText="@{activity.description}"
-                                tools:text="Description" />-->
                         </ScrollView>
 
-                        <!--TextView
-                            android:id="@+id/note"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="@{UtilsKt.trimFalse(activity.description)}"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/description_lbl"
-                            tools:text="Description" /-->
+
                     </android.support.constraint.ConstraintLayout>
                 </android.support.v7.widget.CardView>
             </LinearLayout>

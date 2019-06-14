@@ -57,12 +57,10 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
     }
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
-    private var activitiesList: ArrayList<Activity> = ArrayList()
+    private var query: String? = null
     private val activityListType = object : TypeToken<ArrayList<Activity>>() {}.type
     private val limit = RECORD_LIMIT
     private var coordinatorLayout: CoordinatorLayout? = null
-    private var filterMenu: Menu? = null
-    private var sortByMenu: Menu? = null
     private lateinit var activityType: ActivityType
     private var isFilterActive: Boolean = true
 
@@ -166,13 +164,15 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
 
         binding.activitiesRecyclerView.layoutManager = layoutManager
         binding.activitiesRecyclerView.itemAnimator = DefaultItemAnimator()
-        //binding.activitiesRecyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-
         mAdapter.setupScrollListener(binding.activitiesRecyclerView)
 
         if (!mAdapter.hasRetryListener()) {
             mAdapter.retryListener {
-                fetchActivities("date_deadline")
+                if (query != null) {
+                    fetchActivitiesQuery(query)
+                } else {
+                    fetchActivities()
+                }
             }
         }
 
@@ -180,7 +180,11 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
             mAdapter.clear()
             if (!mAdapter.hasMoreListener()) {
                 mAdapter.showMore()
-                fetchActivities("date_deadline")
+                if (query != null) {
+                    fetchActivitiesQuery(query)
+                } else {
+                    fetchActivities()
+                }
             }
             binding.srl.post {
                 binding.srl.isRefreshing = false
@@ -189,7 +193,11 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
 
         if (mAdapter.rowItemCount == 0) {
             mAdapter.showMore()
-            fetchActivities("date_deadline")
+            if (query != null) {
+                fetchActivitiesQuery(query)
+            } else {
+                fetchActivities()
+            }
         }
 
         binding.activitiesRecyclerView.adapter = mAdapter
@@ -201,10 +209,6 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
         if (viewHolder is ActivityViewHolder) {
-//            val pos = viewHolder.adapterPosition
-            // get the removed item name to display it in snack bar
-//            val name = activitiesList[pos].summary
-//            val id = activitiesList[pos].id
             val item = mAdapter.items[position] as Activity
             val name = jsonElementToString(item.activityTypeId) + ": " + item.summary.trimFalse()
             checkActivityAsDone(item.id, name, position)
@@ -271,33 +275,43 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
         super.onDestroyView()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_activities, menu)
-
-        // Menu for filter
-        filterMenu = menu?.getItem(0)?.subMenu
-
-        // Menu for sort
-        sortByMenu = menu?.getItem(2)?.subMenu?.getItem(0)?.subMenu
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        menu?.let {
+            it.findItem(R.id.action_filter_my_activities).let { item ->
+                isFilterActive = item.isChecked
+            }
+        }
 
         val searchManager = getActivity()?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchItem = menu?.findItem(R.id.action_activities_search)
         val searchView = searchItem?.actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity()?.componentName))
         searchView.setOnQueryTextListener(this)
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_activities, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_filter_my_activities -> {
-
+                item.isChecked = !item.isChecked
+                isFilterActive = item.isChecked
+                mAdapter.clear()
+                if (query != null) {
+                    fetchActivitiesQuery(query)
+                } else {
+                    fetchActivities()
+                }
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun fetchActivities(filterType: String) {
+    private fun fetchActivities() {
         Odoo.searchRead("mail.activity", Activity.fields,
                 when (activityType) {
                     ActivityType.Activity -> {
@@ -310,7 +324,7 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                         }
                     }
                 }
-                , mAdapter.rowItemCount, RECORD_LIMIT, "$filterType ASC") {
+                , mAdapter.rowItemCount, RECORD_LIMIT, "date_deadline ASC") {
             onSubscribe { disposable ->
                 compositeDisposable.add(disposable)
             }
@@ -324,8 +338,6 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                         mAdapter.hideMore()
                         val items: ArrayList<Activity> = gson.fromJson(searchRead.result.records, activityListType)
 
-//                        activitiesList.addAll(items)
-
                         if (items.size < limit) {
                             mAdapter.removeMoreListener()
                             if (items.size == 0 && mAdapter.rowItemCount == 0) {
@@ -334,7 +346,7 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                         } else {
                             if (!mAdapter.hasMoreListener()) {
                                 mAdapter.moreListener {
-                                    fetchActivities(filterType)
+                                    fetchActivities()
                                 }
                             }
                         }
@@ -362,13 +374,24 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
         Odoo.searchRead("mail.activity", Activity.fields,
                 when (activityType) {
                     ActivityType.Activity -> {
-                        listOf(
-                                "|",
-                                "|",
-                                listOf("summary", "ilike", query),
-                                listOf("note", "ilike", query),
-                                listOf("res_name", "ilike", query)
-                        )
+                        if (isFilterActive) {
+                            listOf(
+                                    listOf("user_id", '=', Odoo.user.id),
+                                    "|",
+                                    "|",
+                                    listOf("summary", "ilike", query),
+                                    listOf("note", "ilike", query),
+                                    listOf("res_name", "ilike", query)
+                            )
+                        }else{
+                            listOf(
+                                    "|",
+                                    "|",
+                                    listOf("summary", "ilike", query),
+                                    listOf("note", "ilike", query),
+                                    listOf("res_name", "ilike", query)
+                            )
+                        }
                     }
                 }
                 , mAdapter.rowItemCount, RECORD_LIMIT, "date_deadline ASC") {
@@ -384,8 +407,6 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                         mAdapter.hideError()
                         mAdapter.hideMore()
                         val items: ArrayList<Activity> = gson.fromJson(searchRead.result.records, activityListType)
-
-//                        activitiesList.addAll(items)
 
                         if (items.size < limit) {
                             mAdapter.removeMoreListener()
@@ -422,6 +443,7 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
             mAdapter.clear()
             compositeDisposable.dispose()
             compositeDisposable = CompositeDisposable()
+            this.query = query
             fetchActivitiesQuery(query)
         }
         return true
@@ -432,6 +454,7 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
             mAdapter.clear()
             compositeDisposable.dispose()
             compositeDisposable = CompositeDisposable()
+            this.query = newText
             fetchActivitiesQuery(newText)
         }
         return true
