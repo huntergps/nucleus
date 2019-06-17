@@ -1,10 +1,11 @@
-package com.domatix.yevbes.nucleus.activities
+package com.domatix.yevbes.nucleus.activities.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.domatix.yevbes.nucleus.R
+import com.domatix.yevbes.nucleus.activities.ActivitiesFragment
 import com.domatix.yevbes.nucleus.activities.callbacks.OnCheckClicked
 import com.domatix.yevbes.nucleus.activities.entities.Activity
 import com.domatix.yevbes.nucleus.core.utils.recycler.RecyclerBaseAdapter
@@ -18,7 +19,8 @@ class ActivityDataAdapter(
         val fragment: ActivitiesFragment,
         items: ArrayList<Any>,
         private val listener: OnCheckClicked,
-        private val clickListener: OnShortLongAdapterItemClickListener
+        private val clickListener: OnShortLongAdapterItemClickListener,
+        private var isFilterActive: Boolean
 ) : RecyclerBaseAdapter(items, fragment.binding.activitiesRecyclerView) {
 
     companion object {
@@ -29,6 +31,10 @@ class ActivityDataAdapter(
     private var rowItems: ArrayList<Activity> = ArrayList(
             items.filterIsInstance<Activity>()
     )
+
+    fun isFilterActive(isActive: Boolean) {
+        isFilterActive = isActive
+    }
 
 
     fun addRowItems(rowItemsAll: ArrayList<Activity>) {
@@ -70,7 +76,7 @@ class ActivityDataAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         when (viewType) {
-            ActivityDataAdapter.VIEW_TYPE_ITEM -> {
+            VIEW_TYPE_ITEM -> {
                 val binding = ActivityRowBinding.inflate(
                         inflater,
                         parent,
@@ -110,6 +116,7 @@ class ActivityDataAdapter(
                 val item = items[position] as Activity
                 val binding = holder.binding
                 binding.activityObj = item
+                binding.isFilterChecked = isFilterActive
             }
         }
     }

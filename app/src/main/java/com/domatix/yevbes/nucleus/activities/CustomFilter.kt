@@ -1,6 +1,7 @@
 package com.domatix.yevbes.nucleus.activities
 
 import android.widget.Filter
+import com.domatix.yevbes.nucleus.activities.adapters.ActivityDataAdapter
 import com.domatix.yevbes.nucleus.activities.entities.Activity
 
 

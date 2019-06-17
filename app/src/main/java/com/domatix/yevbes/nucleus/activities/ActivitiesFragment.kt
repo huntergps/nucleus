@@ -19,6 +19,8 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.activities.activities.DetailActivityActivity
+import com.domatix.yevbes.nucleus.activities.adapters.ActivityDataAdapter
+import com.domatix.yevbes.nucleus.activities.adapters.ActivityViewHolder
 import com.domatix.yevbes.nucleus.activities.callbacks.OnCheckClicked
 import com.domatix.yevbes.nucleus.activities.entities.Activity
 import com.domatix.yevbes.nucleus.core.Odoo
@@ -87,7 +89,8 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                 // Nothing
             }
 
-        })
+        },
+                isFilterActive)
     }
 
     lateinit var activity: MainActivity private set
@@ -156,7 +159,6 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                 binding.tb, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         activity.binding.dl.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
-
 
         val layoutManager = LinearLayoutManager(
                 activity, LinearLayoutManager.VERTICAL, false
@@ -301,6 +303,7 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                 item.isChecked = !item.isChecked
                 isFilterActive = item.isChecked
                 mAdapter.clear()
+                mAdapter.isFilterActive(isFilterActive)
                 if (query != null) {
                     fetchActivitiesQuery(query)
                 } else {
@@ -383,7 +386,7 @@ class ActivitiesFragment : Fragment(), RecyclerItemTouchHelper.RecyclerItemTouch
                                     listOf("note", "ilike", query),
                                     listOf("res_name", "ilike", query)
                             )
-                        }else{
+                        } else {
                             listOf(
                                     "|",
                                     "|",

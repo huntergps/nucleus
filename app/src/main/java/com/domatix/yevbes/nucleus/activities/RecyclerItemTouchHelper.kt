@@ -3,6 +3,7 @@ package com.domatix.yevbes.nucleus.activities
 import android.graphics.Canvas
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import com.domatix.yevbes.nucleus.activities.adapters.ActivityViewHolder
 
 class RecyclerItemTouchHelper(dragDirs: Int, swipeDirs: Int, private val listener: RecyclerItemTouchHelperListener) : ItemTouchHelper.SimpleCallback(dragDirs, swipeDirs) {
 

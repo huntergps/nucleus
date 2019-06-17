@@ -47,6 +47,7 @@ class DetailActivityActivity : AppCompatActivity() {
         activity = gson.fromJson<Activity>(activityGsonString, object : TypeToken<Activity>() {
         }.type)
         binding.activity = activity
+        binding.act = this
         setSupportActionBar(tb)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         tb.setNavigationOnClickListener {
@@ -64,6 +65,9 @@ class DetailActivityActivity : AppCompatActivity() {
         }
 
         binding.resName.setOnClickListener(null)
+        binding.responsibleName.setTextColor(ContextCompat.getColor(this@DetailActivityActivity,R.color.colorAccent))
+        binding.responsibleName.setOnClickListener(modelDetailsListener(activity.userId.asJsonArray[0].asInt, this@DetailActivityActivity, responsible_name, "res.partner"))
+
         getModel(activity.modelId.asJsonArray[0].asInt)
     }
 

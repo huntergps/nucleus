@@ -4,14 +4,16 @@ import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
 import android.support.v7.content.res.AppCompatResources.getDrawable
 import android.support.v7.widget.CardView
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.*
-import com.domatix.yevbes.nucleus.DateUtils
-import com.domatix.yevbes.nucleus.R
-import com.domatix.yevbes.nucleus.asManyToOne
+import com.domatix.yevbes.nucleus.*
+import com.domatix.yevbes.nucleus.activities.activities.DetailActivityActivity
+import com.domatix.yevbes.nucleus.activities.adapters.CustomerAdapter
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.generic.models.CalendarEvent
-import com.domatix.yevbes.nucleus.gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.annotations.Expose
@@ -26,6 +28,7 @@ import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter
 import org.sufficientlysecure.htmltextview.HtmlTextView
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 data class Activity(
@@ -84,8 +87,28 @@ data class Activity(
         }
 
         @JvmStatic
-        @BindingAdapter("setAttendees")
-        fun setAttendees(lv: ListView, item: Activity) {
+        @BindingAdapter("setResponsible")
+        fun setResponsible(linearLayout: LinearLayout, filterChecked: Boolean) {
+            if (filterChecked) {
+                linearLayout.visibility = View.GONE
+            }else{
+                linearLayout.visibility = View.VISIBLE
+            }
+        }
+
+        @JvmStatic
+        @BindingAdapter(value = ["setAttendees", "setActivity"], requireAll = true)
+        fun setAttendees(rv: RecyclerView, item: Activity, activity: DetailActivityActivity) {
+            val customerAdapter  = CustomerAdapter(arrayListOf(), activity)
+
+            val layoutManager = LinearLayoutManager(
+                    Odoo.app, LinearLayoutManager.VERTICAL, false
+            )
+
+            rv.layoutManager = layoutManager
+            rv.itemAnimator = DefaultItemAnimator()
+            rv.adapter = customerAdapter
+
             if (!item.calendarEventId.isJsonPrimitive) {
                 val compositeDisposable = CompositeDisposable()
                 var calendarEvent: CalendarEvent? = null
@@ -122,9 +145,8 @@ data class Activity(
                                         if (read.isSuccessful) {
                                             val result = read.result
                                             arrayOfPartners = result.asJsonArray
-                                            arrayOfPartners?.let {
-
-                                            }
+                                            val arrayList = gson.fromJson<ArrayList<JsonElement>>(arrayOfPartners, object : TypeToken<ArrayList<JsonElement>>(){}.type)
+                                            customerAdapter.addItems(arrayList)
                                         }
                                     }
                                 }

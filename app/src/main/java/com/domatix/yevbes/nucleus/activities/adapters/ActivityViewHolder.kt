@@ -1,4 +1,4 @@
-package com.domatix.yevbes.nucleus.activities
+package com.domatix.yevbes.nucleus.activities.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
