@@ -127,7 +127,7 @@
                         android:minWidth="65dp"
                         android:layout_marginTop="8dp"
                         android:background="@drawable/mybutton"
-                        android:drawableStart="@drawable/ic_calendar_check_late"
+                        android:drawableStart="@{activityObj.drawableTextDate != null ? activityObj.drawableTextDate : @drawable/ic_calendar_check_late}"
                         android:fontFamily="fontFamily: sans-serif-thin"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
@@ -137,7 +137,9 @@
                         android:textStyle="normal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        android:text="@{activityObj.textDate != null ? activityObj.textDate : ``}"
                         app:textDate="@{activityObj}"
+                        tools:drawableStart="@drawable/ic_calendar_check_late"
                         tools:text=" 2 days ago" />
 
                     <TextView

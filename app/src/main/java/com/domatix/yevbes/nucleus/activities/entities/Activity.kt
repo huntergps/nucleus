@@ -7,28 +7,30 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.*
-import com.domatix.yevbes.nucleus.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import com.domatix.yevbes.nucleus.DateUtils
+import com.domatix.yevbes.nucleus.R
 import com.domatix.yevbes.nucleus.activities.activities.DetailActivityActivity
 import com.domatix.yevbes.nucleus.activities.adapters.CustomerAdapter
+import com.domatix.yevbes.nucleus.asManyToOne
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.generic.models.CalendarEvent
+import com.domatix.yevbes.nucleus.gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import io.reactivex.disposables.CompositeDisposable
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import org.joda.time.Duration
 import org.joda.time.format.DateTimeFormat
 import org.ocpsoft.prettytime.PrettyTime
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter
 import org.sufficientlysecure.htmltextview.HtmlTextView
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 data class Activity(
         @Expose
@@ -76,7 +78,10 @@ data class Activity(
         val calendarEventId: JsonElement,
 
         @Expose
-        var duration: String? = null
+        var duration: String? = null,
+
+        var textDate: String? = null,
+        var drawableTextDate: Drawable? = null
 ) {
 
     companion object {
@@ -93,7 +98,7 @@ data class Activity(
         fun setResponsible(linearLayout: LinearLayout, filterChecked: Boolean) {
             if (filterChecked) {
                 linearLayout.visibility = View.GONE
-            }else{
+            } else {
                 linearLayout.visibility = View.VISIBLE
             }
         }
@@ -102,7 +107,7 @@ data class Activity(
         @Synchronized
         @BindingAdapter(value = ["setAttendees", "setActivity"], requireAll = true)
         fun setAttendees(rv: RecyclerView, item: Activity, activity: DetailActivityActivity) {
-            val customerAdapter  = CustomerAdapter(arrayListOf(), activity)
+            val customerAdapter = CustomerAdapter(arrayListOf(), activity)
 
             val layoutManager = LinearLayoutManager(
                     Odoo.app, LinearLayoutManager.VERTICAL, false
@@ -145,7 +150,7 @@ data class Activity(
                                         if (read.isSuccessful) {
                                             val result = read.result
                                             arrayOfPartners = result.asJsonArray
-                                            val arrayList = gson.fromJson<ArrayList<JsonElement>>(arrayOfPartners, object : TypeToken<ArrayList<JsonElement>>(){}.type)
+                                            val arrayList = gson.fromJson<ArrayList<JsonElement>>(arrayOfPartners, object : TypeToken<ArrayList<JsonElement>>() {}.type)
                                             customerAdapter.addItems(arrayList)
                                         }
                                     }
@@ -172,73 +177,80 @@ data class Activity(
         @Synchronized
         @BindingAdapter("textDate")
         fun setDateText(view: Button, item: Activity) {
-            val p = PrettyTime(Locale(Locale.getDefault().displayLanguage))
+            if (item.textDate == null) {
+                val p = PrettyTime(Locale(Locale.getDefault().displayLanguage))
 
-            val dateOnly = SimpleDateFormat("yyyy-MM-dd")
-            val formattedDate = dateOnly.format(DateTime().toDate())
-            val currentDate = DateTime(formattedDate).toDate()
+                val dateOnly = SimpleDateFormat("yyyy-MM-dd")
+                val formattedDate = dateOnly.format(DateTime().toDate())
+                val currentDate = DateTime(formattedDate).toDate()
 
-            val deadLineDate = DateTime(item.dateDeadline).plusHours(DateTime().hourOfDay).toDate()
+                val deadLineDate = DateTime(item.dateDeadline).plusHours(DateTime().hourOfDay).toDate()
 
-            val drawable: Drawable?
-            when {
-                DateUtils.isSameDay(deadLineDate, currentDate) -> {
-                    drawable = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_today)
-                    view.text = Odoo.app.getString(R.string.today)
-                }
-
-                DateUtils.isAfterDay(deadLineDate, currentDate) -> {
-                    drawable = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_future)
-                    view.text = " " + p.format(deadLineDate)
-                }
-
-                DateUtils.isBeforeDay(deadLineDate, currentDate) -> {
-                    drawable = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_late)
-                    view.text = " " + p.format(deadLineDate)
-                }
-
-                else -> {
-                    drawable = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_late)
-                    view.text = " " + p.format(deadLineDate)
-                }
-            }
-            view.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
-
-            if (isTomorrow(deadLineDate)) {
-                view.text = Odoo.app.getString(R.string.tomorrow)
-            }
-            if (isYesterday(deadLineDate)) {
-                view.text = Odoo.app.getString(R.string.before_day)
-            }
-
-            if (!item.calendarEventId.isJsonPrimitive) {
-                val idEventCalendar = item.calendarEventId.asManyToOne.id
-
-
-                Odoo.load(id = idEventCalendar, model = "calendar.event", fields = listOf("display_time")) {
-                    onSubscribe { disposable ->
+                when {
+                    DateUtils.isSameDay(deadLineDate, currentDate) -> {
+                        item.drawableTextDate = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_today)
+                        item.textDate = Odoo.app.getString(R.string.today)
+                        view.text = item.textDate
                     }
 
-                    onNext { response ->
-                        if (response.isSuccessful) {
-                            val load = response.body()!!
-                            if (load.isSuccessful) {
-                                val result = load.result
-                                val aux = result.value
+                    DateUtils.isAfterDay(deadLineDate, currentDate) -> {
+                        item.drawableTextDate = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_future)
+                        item.textDate = " " + p.format(deadLineDate)
+                        view.text = item.textDate
+                    }
 
-                                val formatDateTime = aux.getAsJsonPrimitive("display_start").asString
-                                val dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC()
-                                val dateTime = dtf.parseDateTime(formatDateTime).withZone(DateTimeZone.getDefault())
+                    DateUtils.isBeforeDay(deadLineDate, currentDate) -> {
+                        item.drawableTextDate = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_late)
+                        item.textDate = " " + p.format(deadLineDate)
+                        view.text = item.textDate
+                    }
 
-                                if (DateUtils.isToday(deadLineDate)) {
-                                    view.text = Odoo.app.getString(R.string.today) + " a las ${dateTime.toString("HH:mm")}"
-                                } else {
+                    else -> {
+                        item.drawableTextDate = getDrawable(Odoo.app.applicationContext, R.drawable.ic_calendar_check_late)
+                        item.textDate = " " + p.format(deadLineDate)
+                        view.text = item.textDate
+                    }
+                }
+                view.setCompoundDrawablesWithIntrinsicBounds(item.drawableTextDate, null, null, null)
+
+                if (isTomorrow(deadLineDate)) {
+                    item.textDate = Odoo.app.getString(R.string.tomorrow)
+                    view.text = item.textDate
+                }
+                if (isYesterday(deadLineDate)) {
+                    item.textDate = Odoo.app.getString(R.string.before_day)
+                    view.text = item.textDate
+                }
+
+                if (!item.calendarEventId.isJsonPrimitive) {
+                    val idEventCalendar = item.calendarEventId.asManyToOne.id
+
+
+                    Odoo.load(id = idEventCalendar, model = "calendar.event", fields = listOf("display_time")) {
+                        onSubscribe { disposable ->
+                        }
+
+                        onNext { response ->
+                            if (response.isSuccessful) {
+                                val load = response.body()!!
+                                if (load.isSuccessful) {
+                                    val result = load.result
+                                    val aux = result.value
+
+                                    val formatDateTime = aux.getAsJsonPrimitive("display_start").asString
+                                    val dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC()
+                                    val dateTime = dtf.parseDateTime(formatDateTime).withZone(DateTimeZone.getDefault())
+
+                                    if (DateUtils.isToday(deadLineDate)) {
+                                        item.textDate = Odoo.app.getString(R.string.today) + " a las ${dateTime.toString("HH:mm")}"
+                                        view.text = item.textDate
+                                    } else {
 //                                    view.text = " " + p.format(deadLineDate)
+                                    }
                                 }
                             }
                         }
                     }
-
                 }
             }
         }
