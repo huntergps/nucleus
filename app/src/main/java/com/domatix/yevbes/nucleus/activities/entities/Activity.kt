@@ -305,5 +305,4 @@ data class Activity(
         @JvmField
         val fields: ArrayList<String> = fieldsMap.keys.toMutableList() as ArrayList<String>
     }
-
 }
