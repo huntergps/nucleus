@@ -97,6 +97,7 @@ data class Activity(
         }
 
         @JvmStatic
+        @Synchronized
         @BindingAdapter(value = ["setAttendees", "setActivity"], requireAll = true)
         fun setAttendees(rv: RecyclerView, item: Activity, activity: DetailActivityActivity) {
             val customerAdapter  = CustomerAdapter(arrayListOf(), activity)
@@ -169,6 +170,7 @@ data class Activity(
 
 
         @JvmStatic
+        @Synchronized
         @BindingAdapter("textDate")
         fun setDateText(view: Button, item: Activity) {
             val p = PrettyTime(Locale(Locale.getDefault().displayLanguage))
@@ -245,6 +247,7 @@ data class Activity(
         }
 
         @JvmStatic
+        @Synchronized
         @BindingAdapter("durationText")
         fun setDurationText(view: TextView, item: Activity) {
             if (!item.calendarEventId.isJsonPrimitive) {
