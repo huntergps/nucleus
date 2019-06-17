@@ -5,6 +5,7 @@
 
     <data>
         <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+        <import type="android.view.View" />
 
         <variable
             name="activityObj"
@@ -161,7 +162,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textSize="12sp"
-                        android:visibility="gone"
+                        android:visibility="@{activityObj.calendarEventId.jsonPrimitive ? View.GONE : View.VISIBLE}"
+                        android:text="@{activityObj.duration != null ? activityObj.duration : ``}"
                         app:durationText="@{activityObj}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/buttonDatePicker"

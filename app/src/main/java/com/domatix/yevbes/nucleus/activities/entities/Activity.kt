@@ -3,7 +3,6 @@ package com.domatix.yevbes.nucleus.activities.entities
 import android.databinding.BindingAdapter
 import android.graphics.drawable.Drawable
 import android.support.v7.content.res.AppCompatResources.getDrawable
-import android.support.v7.widget.CardView
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,6 +21,7 @@ import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
+import org.joda.time.Duration
 import org.joda.time.format.DateTimeFormat
 import org.ocpsoft.prettytime.PrettyTime
 import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter
@@ -29,7 +29,6 @@ import org.sufficientlysecure.htmltextview.HtmlTextView
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 data class Activity(
         @Expose
@@ -74,13 +73,16 @@ data class Activity(
 
         @Expose
         @SerializedName("calendar_event_id")
-        val calendarEventId: JsonElement
+        val calendarEventId: JsonElement,
+
+        @Expose
+        var duration: String? = null
 ) {
 
     companion object {
         @JvmStatic
         @BindingAdapter("setVisibility")
-        fun setVisibility(view: CardView, item: Activity) {
+        fun setVisibility(view: View, item: Activity) {
             if (!item.calendarEventId.isJsonPrimitive) {
                 view.visibility = View.VISIBLE
             }
@@ -111,12 +113,10 @@ data class Activity(
             rv.adapter = customerAdapter
 
             if (!item.calendarEventId.isJsonPrimitive) {
-                val compositeDisposable = CompositeDisposable()
                 var calendarEvent: CalendarEvent? = null
                 var arrayOfPartners: JsonArray? = null
                 Odoo.load(id = item.calendarEventId.asJsonArray[0].asInt, model = "calendar.event", fields = CalendarEvent.fields) {
                     onSubscribe {
-                        compositeDisposable.add(it)
                     }
 
                     onNext { response ->
@@ -137,7 +137,6 @@ data class Activity(
                             }.type)
                             Odoo.read(model = "res.partner", ids = listIds, fields = listOf("id", "display_name")) {
                                 onSubscribe { disposable ->
-                                    compositeDisposable.add(disposable)
                                 }
 
                                 onNext { response ->
@@ -215,11 +214,9 @@ data class Activity(
             if (!item.calendarEventId.isJsonPrimitive) {
                 val idEventCalendar = item.calendarEventId.asManyToOne.id
 
-                val compositeDisposable = CompositeDisposable()
 
                 Odoo.load(id = idEventCalendar, model = "calendar.event", fields = listOf("display_time")) {
                     onSubscribe { disposable ->
-                        compositeDisposable.add(disposable)
                     }
 
                     onNext { response ->
@@ -250,16 +247,10 @@ data class Activity(
         @Synchronized
         @BindingAdapter("durationText")
         fun setDurationText(view: TextView, item: Activity) {
-            if (!item.calendarEventId.isJsonPrimitive) {
+            if (!item.calendarEventId.isJsonPrimitive && view.visibility == View.VISIBLE && item.duration == null) {
                 val idEventCalendar = item.calendarEventId.asManyToOne.id
 
-                val compositeDisposable = CompositeDisposable()
-
                 Odoo.load(id = idEventCalendar, model = "calendar.event") {
-                    onSubscribe { disposable ->
-                        compositeDisposable.add(disposable)
-                    }
-
                     onNext { response ->
                         if (response.isSuccessful) {
                             val load = response.body()!!
@@ -278,8 +269,8 @@ data class Activity(
                                 val diffMinutes = diff / (60 * 1000) % 60
                                 val diffHours = diff / (60 * 60 * 1000) % 24
 
-                                view.text = Odoo.app.getString(com.domatix.yevbes.nucleus.R.string.duration_activ) + " ${diffHours}h:${diffMinutes}m"
-                                view.visibility = View.VISIBLE
+                                item.duration = Odoo.app.getString(com.domatix.yevbes.nucleus.R.string.duration_activ) + " ${diffHours}h:${diffMinutes}m"
+                                view.text = item.duration
                             }
                         }
                     }

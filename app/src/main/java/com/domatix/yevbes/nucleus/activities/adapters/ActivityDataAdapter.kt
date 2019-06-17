@@ -12,7 +12,6 @@ import com.domatix.yevbes.nucleus.core.utils.recycler.RecyclerBaseAdapter
 import com.domatix.yevbes.nucleus.databinding.ActivityRowBinding
 import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterItemClickListener
 import kotlinx.android.synthetic.main.activity_row.view.*
-import kotlin.collections.ArrayList
 
 
 class ActivityDataAdapter(
@@ -88,7 +87,7 @@ class ActivityDataAdapter(
                 }
 
                 binding.root.imageView10.setOnClickListener {
-                    listener.onCheckClicked( binding.root)
+                    listener.onCheckClicked(binding.root)
                 }
 
                 return ActivityViewHolder(binding,

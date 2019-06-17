@@ -6,6 +6,7 @@
     <data>
 
         <import type="com.domatix.yevbes.nucleus.UtilsKt" />
+        <import type="android.view.View" />
 
         <variable
             name="activity"
@@ -59,7 +60,7 @@
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_16dp">
+                        android:padding="@dimen/default_8dp">
 
                         <TextView
                             android:id="@+id/summary"
@@ -149,13 +150,15 @@
                                 android:textSize="14sp"
                                 tools:text="disber" />
                         </LinearLayout>
+
                         <TextView
                             android:id="@+id/tvDuration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:textSize="12sp"
-                            android:visibility="gone"
+                            android:visibility="@{activity.calendarEventId.jsonPrimitive ? View.GONE : View.VISIBLE}"
+                            android:text="@{activity.duration != null ? activity.duration : ``}"
                             app:durationText="@{activity}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/buttonDatePicker"
@@ -176,7 +179,7 @@
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_16dp">
+                        android:padding="@dimen/default_8dp">
 
                         <TextView
                             android:id="@+id/attendees_lbl"
@@ -198,8 +201,8 @@
                             app:layout_constraintEnd_toEndOf="@+id/attendees_lbl"
                             app:layout_constraintStart_toStartOf="@+id/attendees_lbl"
                             app:layout_constraintTop_toBottomOf="@+id/attendees_lbl"
-                            app:setAttendees="@{activity}"
                             app:setActivity="@{act}"
+                            app:setAttendees="@{activity}"
                             tools:itemCount="5"
                             tools:listitem="@layout/item_activity_customer" />
 
@@ -215,7 +218,7 @@
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/default_16dp">
+                        android:padding="@dimen/default_8dp">
 
                         <TextView
                             android:id="@+id/description_lbl"
