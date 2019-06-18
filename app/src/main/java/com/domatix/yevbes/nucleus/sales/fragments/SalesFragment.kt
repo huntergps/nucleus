@@ -507,6 +507,7 @@ class SalesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun floatingActionButtonAddPressed() {
         val intent = Intent(activity,SaleDetailActivity::class.java)
+        intent.putExtra(SALE_ORDER, "")
         intent.putExtra(SaleDetailActivity.FRAGMENT_TYPE,SaleDetailActivity.Companion.FragmentType.AddFragment)
         startActivity(intent)
     }
