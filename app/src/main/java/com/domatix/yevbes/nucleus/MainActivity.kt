@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            loadFragment(ACTION_ACTIVITIES)
+            loadFragment(ACTION_SALES)
         }
     }
 

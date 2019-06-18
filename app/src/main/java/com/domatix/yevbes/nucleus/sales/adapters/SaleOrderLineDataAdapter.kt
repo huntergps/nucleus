@@ -11,9 +11,9 @@ import com.domatix.yevbes.nucleus.sales.fragments.SaleOrderProfileFragment
 import kotlinx.android.synthetic.main.fragment_sale_order_profile.view.*
 
 class SaleOrderLineDataAdapter(
-        val fragment: SaleOrderProfileFragment,
+        val rv: RecyclerView,
         items: ArrayList<Any>
-) : RecyclerBaseAdapter(items, fragment.binding.root.saleOrderLineRecyclerView) {
+) : RecyclerBaseAdapter(items, rv) {
     companion object {
         const val TAG: String = "SaleOrderLineAdapter"
         private const val VIEW_TYPE_ITEM = 0

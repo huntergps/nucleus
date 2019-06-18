@@ -47,6 +47,7 @@ class OrderEditAdapter(
     fun addSaleOrderLineRowItems(saleOrderLineRowItems: ArrayList<SaleOrderLine>) {
         this.saleOrderLineRowItems.addAll(saleOrderLineRowItems)
         addAll(saleOrderLineRowItems.toMutableList<Any>() as ArrayList<Any>)
+        notifyItemRangeInserted(itemCount, saleOrderLineRowItems.size)
     }
 
     fun restoreItem(item: SaleOrderLine, position: Int) {
@@ -60,7 +61,7 @@ class OrderEditAdapter(
         notifyItemChanged(position)
     }
 
-    fun removeSaleOrderLineRowItem(position: Int) : SaleOrderLine {
+    fun removeSaleOrderLineRowItem(position: Int): SaleOrderLine {
         removeItem(position)
         notifyItemRemoved(position)
         return saleOrderLineRowItems.removeAt(position)

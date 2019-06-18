@@ -9,15 +9,15 @@ import com.domatix.yevbes.nucleus.customer.entities.Customer
 import com.domatix.yevbes.nucleus.databinding.CustomerProfileActivityBinding
 import com.domatix.yevbes.nucleus.generic.ui.dialogs.CustomDialogFragment
 import com.domatix.yevbes.nucleus.gson
+import com.domatix.yevbes.nucleus.utils.ConstantManager.Companion.MODEL_ITEM_ID
 import com.google.gson.reflect.TypeToken
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 
-const val MODEL_ITEM_ID = "MODEL_ITEM_ID"
 class ContactDetailActivity : AppCompatActivity() {
-    lateinit var binding: CustomerProfileActivityBinding
+    private lateinit var binding: CustomerProfileActivityBinding
     lateinit var compositeDisposable: CompositeDisposable private set
-    lateinit var customDialogFragment: CustomDialogFragment
+    private lateinit var customDialogFragment: CustomDialogFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

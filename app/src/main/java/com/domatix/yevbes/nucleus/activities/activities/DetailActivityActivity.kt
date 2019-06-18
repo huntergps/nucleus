@@ -109,7 +109,15 @@ class DetailActivityActivity : AppCompatActivity() {
                         "res.partner" -> {
                             binding.resName.let { resName ->
                                 resName.setTextColor(ContextCompat.getColor(this@DetailActivityActivity,R.color.colorAccent))
-                                resName.setOnClickListener(modelDetailsListener(activity.resId.asInt, this@DetailActivityActivity, resName, "res.partner"))
+                                resName.setOnClickListener(modelDetailsListener(activity.resId.asInt, this@DetailActivityActivity, resName, it.model))
+                            }
+                        }
+
+                        "sale.order" -> {
+                            binding.resName.let {
+                                resName ->
+                                resName.setTextColor(ContextCompat.getColor(this@DetailActivityActivity,R.color.colorAccent))
+                                resName.setOnClickListener(modelDetailsListener(activity.resId.asInt, this@DetailActivityActivity, resName, it.model))
                             }
                         }
                     }

@@ -31,7 +31,8 @@ import com.domatix.yevbes.nucleus.core.entities.Many2One
 import com.domatix.yevbes.nucleus.core.entities.session.authenticate.AuthenticateResult
 import com.domatix.yevbes.nucleus.core.utils.encryptAES
 import com.domatix.yevbes.nucleus.generic.detailCards.ContactDetailActivity
-import com.domatix.yevbes.nucleus.generic.detailCards.MODEL_ITEM_ID
+import com.domatix.yevbes.nucleus.generic.detailCards.SaleDetailActivity
+import com.domatix.yevbes.nucleus.utils.ConstantManager.Companion.MODEL_ITEM_ID
 import com.google.gson.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -409,6 +410,10 @@ fun modelDetailsListener(id: Int,
     when (model) {
         "res.partner" -> {
             intent = Intent(activity, ContactDetailActivity::class.java)
+        }
+
+        "sale.order" -> {
+            intent = Intent(activity, SaleDetailActivity::class.java)
         }
     }
 

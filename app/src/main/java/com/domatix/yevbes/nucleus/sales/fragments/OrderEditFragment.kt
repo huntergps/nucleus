@@ -246,7 +246,8 @@ class OrderEditFragment : Fragment() {
         }
 
         activity = getActivity() as SaleDetailActivity
-        activity.setTitle(R.string.action_sales)
+//        activity.setTitle(R.string.action_sales)
+        activity.title = getString(R.string.sale_name_title, saleOrder!!.name)
         activity.binding.abl.visibility = View.GONE
         activity.binding.nsv.visibility = View.GONE
 
@@ -480,14 +481,14 @@ class OrderEditFragment : Fragment() {
 
     private fun checkForDiscountPolicy(pricelistId: Int) {
         // Lock main thread
-       /* dialogFragment.showDialog()
+        dialogFragment.showDialog()
         dialogFragment.setOnDialogStartListener(object : OnDialogStartListener {
             override fun onDialogStarted() {
                 dialogFragment.setTilte(getString(R.string.loading_data))
                 dialogFragment.setMessage(getString(R.string.loading_discount_policy))
                 dialogFragment.setAnimation("loading.json", true, loop = true, repeatCount = LottieDrawable.INFINITE)
             }
-        })*/
+        })
 
         Odoo.read(model = "product.pricelist", ids = listOf(pricelistId), fields = listOf("discount_policy")) {
             onSubscribe { disposable ->
@@ -508,6 +509,7 @@ class OrderEditFragment : Fragment() {
                                 isPricelistWithDiscount = false
                             }
                         }
+                        dialogFragment.dismissDialog()
                     } else {
                         // Odoo specific error
                         Timber.w("read() failed with ${read.errorMessage}")
@@ -525,7 +527,7 @@ class OrderEditFragment : Fragment() {
             }
 
             onComplete {
-//                dialogFragment.dismissDialog()
+                dialogFragment.dismissDialog()
             }
         }
     }

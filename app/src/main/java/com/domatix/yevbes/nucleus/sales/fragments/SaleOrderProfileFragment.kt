@@ -55,7 +55,7 @@ class SaleOrderProfileFragment : Fragment() {
     }
 
     private val mAdapter: SaleOrderLineDataAdapter by lazy {
-        SaleOrderLineDataAdapter(this, arrayListOf())
+        SaleOrderLineDataAdapter(binding.saleOrderLineRecyclerView, arrayListOf())
     }
 
     private val saleOrderLineListType = object : TypeToken<ArrayList<SaleOrderLine>>() {}.type
