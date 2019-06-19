@@ -130,7 +130,6 @@ class AddSaleFragment : Fragment() {
                                 isPricelistWithDiscount = false
                             }
                         }
-                        dialogFragment.dismissDialog()
                     } else {
                         // Odoo specific error
                         Timber.w("read() failed with ${read.errorMessage}")
@@ -144,7 +143,7 @@ class AddSaleFragment : Fragment() {
 
             onError { error ->
                 error.printStackTrace()
-//                dialogFragment.dismissDialog()
+                dialogFragment.dismissDialog()
             }
 
             onComplete {
@@ -256,11 +255,14 @@ class AddSaleFragment : Fragment() {
         activity.binding.dl.addDrawerListener(drawerToggle)*/
 
         binding.buttonAddOrderSalesLine.setOnClickListener {
-            if (idCustomer != null) {
+            if (idCustomer != null && !::isPricelistWithDiscount.isLateinit) {
                 val intent = Intent(activity, OrderLineListActivity::class.java)
                 startActivityForResult(intent, REQUEST_CODE)
             } else {
-                Toast.makeText(activity, getString(R.string.choose_customer), Toast.LENGTH_SHORT).show()
+                if (idCustomer == null)
+                    Toast.makeText(activity, getString(R.string.choose_customer), Toast.LENGTH_SHORT).show()
+                if (::isPricelistWithDiscount.isLateinit)
+                    Toast.makeText(activity,"Price List not defined",Toast.LENGTH_SHORT).show()
             }
         }
 

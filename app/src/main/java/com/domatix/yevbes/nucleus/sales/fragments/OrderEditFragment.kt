@@ -1,6 +1,5 @@
 package com.domatix.yevbes.nucleus.sales.fragments
 
-
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
@@ -93,7 +92,6 @@ class OrderEditFragment : Fragment() {
     private var partnerShippingId: Int? = null
     private var idPriceList: Int? = null
     private var isPricelistWithDiscount: Boolean? = null
-
 
     private lateinit var selectedItemsJSONString: String
     private lateinit var addedItemsJSONString: String
@@ -236,8 +234,12 @@ class OrderEditFragment : Fragment() {
         binding.saleOrderLineRecyclerView.adapter = mAdapter
 
         binding.buttonAddOrderSalesLine.setOnClickListener {
-            val intent = Intent(activity, OrderLineListActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE)
+            if (!::isPricelistWithDiscount.isLateinit) {
+                val intent = Intent(activity, OrderLineListActivity::class.java)
+                startActivityForResult(intent, REQUEST_CODE)
+            }else{
+                Toast.makeText(activity,"Price List not defined",Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.priceList.setOnClickListener {
@@ -510,15 +512,12 @@ class OrderEditFragment : Fragment() {
                                 isPricelistWithDiscount = false
                             }
                         }
-                        dialogFragment.dismissDialog()
                     } else {
                         // Odoo specific error
                         Timber.w("read() failed with ${read.errorMessage}")
-                        dialogFragment.dismissDialog()
                     }
                 } else {
                     Timber.w("request failed with ${response.code()}:${response.message()}")
-                    dialogFragment.dismissDialog()
                 }
             }
 
