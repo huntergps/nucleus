@@ -25,14 +25,8 @@ class AddOrderLinesAdapter(
             items.filterIsInstance<SaleOrderLine>()
     )
 
-    // for SearchView
-    private var rowItemsCopy: java.util.ArrayList<SaleOrderLine> = java.util.ArrayList(
-            items.filterIsInstance<SaleOrderLine>()
-    )
-
     fun addRowItems(rowItems: java.util.ArrayList<SaleOrderLine>) {
         this.rowItems.addAll(rowItems)
-        this.rowItemsCopy.addAll(rowItems)
         addAll(rowItems.toMutableList<Any>() as java.util.ArrayList<Any>)
     }
 
@@ -75,7 +69,6 @@ class AddOrderLinesAdapter(
 
     override fun clear() {
         rowItems.clear()
-        rowItemsCopy.clear()
         super.clear()
     }
 
@@ -98,7 +91,6 @@ class AddOrderLinesAdapter(
 
     fun addRowItem(saleOrderLine: SaleOrderLine) {
         this.rowItems.add(saleOrderLine)
-        this.rowItemsCopy.add(saleOrderLine)
         add(saleOrderLine,0)
 //        addAll(rowItems.toMutableList<Any>() as java.util.ArrayList<Any>)
     }

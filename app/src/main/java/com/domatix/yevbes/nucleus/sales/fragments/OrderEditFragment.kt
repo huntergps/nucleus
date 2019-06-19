@@ -233,6 +233,8 @@ class OrderEditFragment : Fragment() {
         idCustomer = saleOrder!!.partnerId.asJsonArray.get(0).asInt
 
         binding.saleOrder = saleOrder
+
+        idPriceList = saleOrder!!.pricelistId.asJsonArray[0].asInt
         binding.saleOrderLineRecyclerView.adapter = mAdapter
 
         binding.buttonAddOrderSalesLine.setOnClickListener {
@@ -379,6 +381,7 @@ class OrderEditFragment : Fragment() {
                                         ))
                                         addedItems.addAll(auxSaleOrderLineList)
                                         mAdapter.addSaleOrderLineRowItems(auxSaleOrderLineList)
+                                        auxSaleOrderLineList.clear()
                                         addedItemsJSONString = selectedItemsGson.toJson(auxSaleOrderLineList)
                                     }
                                 })
@@ -513,17 +516,17 @@ class OrderEditFragment : Fragment() {
                     } else {
                         // Odoo specific error
                         Timber.w("read() failed with ${read.errorMessage}")
-//                        dialogFragment.dismissDialog()
+                        dialogFragment.dismissDialog()
                     }
                 } else {
                     Timber.w("request failed with ${response.code()}:${response.message()}")
-//                    dialogFragment.dismissDialog()
+                    dialogFragment.dismissDialog()
                 }
             }
 
             onError { error ->
                 error.printStackTrace()
-//                dialogFragment.dismissDialog()
+                dialogFragment.dismissDialog()
             }
 
             onComplete {

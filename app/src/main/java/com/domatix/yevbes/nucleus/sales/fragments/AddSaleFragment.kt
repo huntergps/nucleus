@@ -20,16 +20,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.airbnb.lottie.LottieDrawable
 import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.FragmentAddSaleBinding
-import com.domatix.yevbes.nucleus.products.entities.ProductProduct
+import com.domatix.yevbes.nucleus.generic.callbacs.OnThreadFinishedListener
+import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogStartListener
+import com.domatix.yevbes.nucleus.generic.ui.dialogs.CustomDialogFragment
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
 import com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity
 import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.AddOrderLinesAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
+import com.domatix.yevbes.nucleus.sales.entities.CustomProductQtyEntity
 import com.domatix.yevbes.nucleus.sales.entities.ProductPricelist
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrderLine
 import com.domatix.yevbes.nucleus.sales.interfaces.LongShortOrderItemClick
@@ -90,6 +94,65 @@ class AddSaleFragment : Fragment() {
     lateinit var myProgressDialog: MyProgressDialog private set
     private val productPricelistType = object : TypeToken<ProductPricelist>() {}.type
 
+    private lateinit var dialogFragment: CustomDialogFragment
+
+
+    private var isPricelistWithDiscount: Boolean? = null
+
+
+    private fun checkForDiscountPolicy(pricelistId: Int) {
+        // Lock main thread
+        dialogFragment.showDialog()
+        dialogFragment.setOnDialogStartListener(object : OnDialogStartListener {
+            override fun onDialogStarted() {
+                dialogFragment.setTilte(getString(R.string.loading_data))
+                dialogFragment.setMessage(getString(R.string.loading_discount_policy))
+                dialogFragment.setAnimation("loading.json", true, loop = true, repeatCount = LottieDrawable.INFINITE)
+            }
+        })
+
+        Odoo.read(model = "product.pricelist", ids = listOf(pricelistId), fields = listOf("discount_policy")) {
+            onSubscribe { disposable ->
+                compositeDisposable.add(disposable)
+            }
+
+            onNext { response ->
+                if (response.isSuccessful) {
+                    val read = response.body()!!
+                    if (read.isSuccessful) {
+                        val result = read.result
+                        val discountPolicy = result.asJsonArray[0].asJsonObject["discount_policy"].asString
+                        when (discountPolicy) {
+                            "with_discount" -> {
+                                isPricelistWithDiscount = true
+                            }
+                            "without_discount" -> {
+                                isPricelistWithDiscount = false
+                            }
+                        }
+                        dialogFragment.dismissDialog()
+                    } else {
+                        // Odoo specific error
+                        Timber.w("read() failed with ${read.errorMessage}")
+//                        dialogFragment.dismissDialog()
+                    }
+                } else {
+                    Timber.w("request failed with ${response.code()}:${response.message()}")
+//                    dialogFragment.dismissDialog()
+                }
+            }
+
+            onError { error ->
+                error.printStackTrace()
+//                dialogFragment.dismissDialog()
+            }
+
+            onComplete {
+                dialogFragment.dismissDialog()
+            }
+        }
+    }
+
     private val adapterSelectedListOrderLineDataAdapter: AddOrderLinesAdapter by lazy {
         AddOrderLinesAdapter(this, arrayListOf(), object : LongShortOrderItemClick {
             override fun onItemClick(view: View) {
@@ -148,12 +211,23 @@ class AddSaleFragment : Fragment() {
 
         activity = getActivity() as SaleDetailActivity
 
+        dialogFragment = CustomDialogFragment.newInstance(
+                activity,
+                fragmentManager!!,
+                showInstantly = false,
+                playAnimation = true,
+                loopAnimation = true,
+                repeatCount = LottieDrawable.INFINITE,
+                cancelable = false)
+
         // get Shared Preferences value
         val sharedPref = activity.getSharedPreferences(getString(R.string.preference_fle_key_res_config_settings), Context.MODE_PRIVATE)
                 ?: return
         val saleNote = sharedPref.getString(getString(R.string.saved_sale_note), "")
         if (!saleNote.isNullOrEmpty())
             binding.termsConditions.text = SpannableStringBuilder(saleNote)
+
+
 
         //activity.binding.tb.title = getString(R.string.action_sales)
 //        activity.setTitle(R.string.action_sales)
@@ -185,8 +259,8 @@ class AddSaleFragment : Fragment() {
             if (idCustomer != null) {
                 val intent = Intent(activity, OrderLineListActivity::class.java)
                 startActivityForResult(intent, REQUEST_CODE)
-            }else{
-                Toast.makeText(activity,getString(R.string.choose_customer),Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(activity, getString(R.string.choose_customer), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -301,7 +375,6 @@ class AddSaleFragment : Fragment() {
                 }
             }
         }
-
     }
 
     private fun addOrder(partnerInvoiceId: Int, partnerShippingId: Int, idCustomer: Int, context: Context, conditions: String) {
@@ -329,7 +402,6 @@ class AddSaleFragment : Fragment() {
                         // Devuelve ID del pedido creado
                         result = create.result
                         //res = result
-
                     } else {
                         // Odoo specific error
                         Timber.w("create() failed with ${create.errorMessage}")
@@ -362,9 +434,10 @@ class AddSaleFragment : Fragment() {
 //        activity.binding.nv.menu.findItem(R.id.nav_sales).isChecked = true
     }
 
-    private fun getUnitPrice(tarifId: Int, productId: Int, quantity: Float, listener: GetTarifaInterface) {
+    private fun getUnitPrice(tarifId: Int, productId: Int, quantity: Float, listener: OnThreadFinishedListener) {
+        var priceWithTarifa: Float? = 0f
         Odoo.callKw(model = "product.pricelist", method = "price_get", args = listOf(tarifId,
-                productId,quantity))
+                productId, quantity))
         {
             onSubscribe { disposable ->
                 compositeDisposable.add(disposable)
@@ -375,8 +448,7 @@ class AddSaleFragment : Fragment() {
                     val callKw = response.body()!!
                     if (callKw.isSuccessful) {
                         val result = callKw.result
-                        val tarifa = result.asJsonObject[tarifId.toString()].asFloat
-                        listener.getTarifa(tarifa)
+                        priceWithTarifa = result.asJsonObject[tarifId.toString()].asFloat
                     } else {
                         // Odoo specific error
                         Timber.w("callkw() failed with ${callKw.errorMessage}")
@@ -391,7 +463,7 @@ class AddSaleFragment : Fragment() {
             }
 
             onComplete {
-
+                listener.onThreadFinished(priceWithTarifa as Any)
             }
         }
     }
@@ -403,26 +475,85 @@ class AddSaleFragment : Fragment() {
             REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
-                        val selectedItemsJSONString = data?.getStringExtra(SELECTED_LIST)
-                        val selectedItemsGson = Gson()
-
-                        val auxSaleOrderLineList = ArrayList<SaleOrderLine>()
-                        val auxProductProductList: ArrayList<ProductProduct>
-
-                        if (!::selectedOrderLines.isInitialized)
-                            selectedOrderLines = ArrayList()
-
-                        auxProductProductList = selectedItemsGson.fromJson(selectedItemsJSONString, object : TypeToken<java.util.ArrayList<ProductProduct>>() {
+                        val addedItemJSONString = data?.getStringExtra(OrderEditFragment.NEW_LIST_ELEMENTS)
+                        val addedList = gson.fromJson<List<CustomProductQtyEntity>>(addedItemJSONString, object : TypeToken<java.util.ArrayList<CustomProductQtyEntity>>() {
                         }.type)
 
-                        for (index in 0 until auxProductProductList.size){
-                            getUnitPrice(idPriceList!!,auxProductProductList[index].id,auxProductProductList[index].quantity, object : GetTarifaInterface {
-                                override fun getTarifa(tarifa: Float) {
-                                    val jsonArray = JsonArray()
-                                    jsonArray.add(auxProductProductList[index].id)
-                                    jsonArray.add(auxProductProductList[index].name)
+                        selectedOrderLines = ArrayList()
 
-                                    /*auxSaleOrderLineList.add(SaleOrderLine(
+                        val auxSaleOrderLineList = ArrayList<SaleOrderLine>()
+                        for (index in 0 until addedList.size) {
+                            if (isPricelistWithDiscount!!) {
+                                getUnitPrice(idPriceList!!, addedList[index].idProduct, addedList[index].quantity, object : OnThreadFinishedListener {
+                                    override fun onThreadFinished(value: Any) {
+                                        val price = value as Float
+                                        val jsonArray = JsonArray()
+                                        jsonArray.add(addedList[index].idProduct)
+                                        jsonArray.add(addedList[index].name)
+
+                                        auxSaleOrderLineList.add(SaleOrderLine(
+                                                0,
+                                                addedList[index].name,
+                                                jsonArray,
+                                                addedList[index].quantity,
+                                                0f,
+                                                addedList[index].lstPrice,
+                                                price,
+                                                addedList[index].lstPrice * addedList[index].quantity,
+                                                addedList[index].taxesId
+                                        ))
+
+                                        selectedOrderLines.addAll(auxSaleOrderLineList)
+                                        adapterSelectedListOrderLineDataAdapter.addRowItems(auxSaleOrderLineList)
+                                        auxSaleOrderLineList.clear()
+                                    }
+                                })
+                            } else {
+                                getUnitPrice(idPriceList!!, addedList[index].idProduct, addedList[index].quantity, object : OnThreadFinishedListener {
+                                    override fun onThreadFinished(value: Any) {
+                                        val price = value as Float
+                                        val jsonArray = JsonArray()
+                                        jsonArray.add(addedList[index].idProduct)
+                                        jsonArray.add(addedList[index].name)
+
+                                        auxSaleOrderLineList.add(SaleOrderLine(
+                                                0,
+                                                addedList[index].name,
+                                                jsonArray,
+                                                addedList[index].quantity,
+                                                0f,
+                                                addedList[index].lstPrice,
+                                                price,
+                                                addedList[index].lstPrice * addedList[index].quantity,
+                                                addedList[index].taxesId
+                                        ))
+
+                                        selectedOrderLines.addAll(auxSaleOrderLineList)
+                                        adapterSelectedListOrderLineDataAdapter.addRowItems(auxSaleOrderLineList)
+                                    }
+                                })
+                            }
+                        }
+                        /*     val selectedItemsJSONString = data?.getStringExtra(SELECTED_LIST)
+                             val selectedItemsGson = Gson()
+
+                             val auxSaleOrderLineList = ArrayList<SaleOrderLine>()
+                             val auxProductProductList: ArrayList<ProductProduct>
+
+                             if (!::selectedOrderLines.isInitialized)
+                                 selectedOrderLines = ArrayList()
+
+                             auxProductProductList = selectedItemsGson.fromJson(selectedItemsJSONString, object : TypeToken<java.util.ArrayList<ProductProduct>>() {
+                             }.type)
+
+                             for (index in 0 until auxProductProductList.size){
+                                 getUnitPrice(idPriceList!!,auxProductProductList[index].id,auxProductProductList[index].quantity, object : GetTarifaInterface {
+                                     override fun getTarifa(tarifa: Float) {
+                                         val jsonArray = JsonArray()
+                                         jsonArray.add(auxProductProductList[index].id)
+                                         jsonArray.add(auxProductProductList[index].name)
+
+                                         *//*auxSaleOrderLineList.add(SaleOrderLine(
                                             0,
                                             auxProductProductList[index].name,
                                             jsonArray,
@@ -433,7 +564,7 @@ class AddSaleFragment : Fragment() {
                                             ,
                                             auxProductProductList[index].lstPrice * auxProductProductList[index].quantity,
                                             auxProductProductList[index].taxesId
-                                    ))*/
+                                    ))*//*
 
                                     val saleOrderLine = SaleOrderLine(
                                             0,
@@ -454,7 +585,7 @@ class AddSaleFragment : Fragment() {
 //                                    adapterSelectedListOrderLineDataAdapter.notifyDataSetChanged()
                                 }
                             })
-                        }
+                        }*/
                     }
 
                     Activity.RESULT_CANCELED -> {
@@ -470,6 +601,7 @@ class AddSaleFragment : Fragment() {
 
                         if (idPriceList != item.id) {
                             idPriceList = item.id
+                            checkForDiscountPolicy(idPriceList!!)
                             binding.pricelist.text = item.displayName
                         }
                     }
@@ -487,6 +619,7 @@ class AddSaleFragment : Fragment() {
                         if (!productlist.isJsonPrimitive) {
                             binding.pricelist.text = productlist.asJsonArray[1].asString
                             idPriceList = productlist.asJsonArray[0].asInt
+                            checkForDiscountPolicy(idPriceList!!)
                         }
 //                        binding.billing.text = data?.getStringExtra(CUSTOMER_BILLING_ADDRESS)
 //                        binding.delivery.text = data?.getStringExtra(CUSTOMER_DELIVERY_ADDRESS)
@@ -563,7 +696,7 @@ class AddSaleFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private interface GetTarifaInterface{
+    private interface GetTarifaInterface {
         fun getTarifa(tarifa: Float)
     }
 

@@ -29,6 +29,7 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.dialog_add_product.view.*
 
 val limit = RECORD_LIMIT * 2
+
 class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -92,6 +93,7 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
                 val position = binding.rvOrderLineList.getChildAdapterPosition(view)
                 val item = mAdapter.items[position] as CustomProductQtyEntity
                 var index = -1
+
                 mAdapter.selectedProducts.forEachIndexed { indx, it ->
                     if (it.idProduct == item.idProduct) {
                         item.quantity = --it.quantity
@@ -104,7 +106,6 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
 
                     if (index != -1)
                         mAdapter.selectedProducts.removeAt(index)
-
                 }
                 mAdapter.updateProductRowItem(position, item)
                 confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
@@ -128,7 +129,6 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
             }
         })
     }
-
 
 
     private fun showAlertDialogQty(view: View) {
@@ -155,24 +155,26 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
             val qty = etQty.text.toString().toFloat()
             if (currentQty != qty && qty >= 0f) {
                 item.quantity = qty
-                mAdapter.updateProductRowItem(position, item)
                 var index = -1
-                mAdapter.selectedProducts.forEachIndexed { indx, it ->
-                    if (it.idProduct == item.idProduct) {
-                        if (qty == 0f) {
-                            index = indx
-                        }else{
+                mAdapter.updateProductRowItem(position, item)
+                if (mAdapter.selectedProducts.isEmpty())
+                    mAdapter.selectedProducts.add(item)
+                else
+                    mAdapter.selectedProducts.forEachIndexed { indx, it ->
+                        if (it.idProduct == item.idProduct) {
                             mAdapter.selectedProducts[indx] = item
+                        }else{
+                            index = indx
                         }
                     }
-                }
+
                 if (index != -1)
-                    mAdapter.selectedProducts.removeAt(index)
+                    mAdapter.selectedProducts.add(item)
 
                 Toast.makeText(this, getString(R.string.qty_updated), Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
                 confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
-            }else{
+            } else {
                 Toast.makeText(this, getString(R.string.qty_wrong), Toast.LENGTH_SHORT).show()
             }
 
@@ -207,7 +209,7 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
             mAdapter.retryListener {
                 if (query != null) {
                     fetchQueryProductProduct(query!!)
-                }else{
+                } else {
                     fetchProductProduct()
                 }
             }
@@ -219,9 +221,10 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
                 mAdapter.showMore()
                 if (query != null) {
                     fetchQueryProductProduct(query!!)
-                }else{
+                } else {
                     fetchProductProduct()
-                }            }
+                }
+            }
             binding.srl.post {
                 binding.srl.isRefreshing = false
             }
@@ -231,7 +234,7 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
             mAdapter.showMore()
             if (query != null) {
                 fetchQueryProductProduct(query!!)
-            }else{
+            } else {
                 fetchProductProduct()
             }
         }
@@ -363,7 +366,7 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
+        when (item?.itemId) {
             R.id.action_confirm -> {
                 if (mAdapter.selectedProducts.isNotEmpty()) {
                     val gsonString = gson.toJson(mAdapter.selectedProducts)
