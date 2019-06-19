@@ -68,16 +68,21 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
                 val actualItem = mAdapter.items[position] as CustomProductQtyEntity
                 mAdapter.updateProductRowItem(position, actualItem)
                 var isFounded = false
-                mAdapter.selectedProducts.forEachIndexed { index, it ->
+                var index = -1
+                mAdapter.selectedProducts.forEachIndexed { indx, it ->
                     if (it.idProduct == actualItem.idProduct) {
                         actualItem.quantity = ++it.quantity
-                        mAdapter.selectedProducts[index] = actualItem
                         isFounded = true
+                        index = indx
                     }
                 }
+
                 if (!isFounded) {
                     actualItem.quantity++
                     mAdapter.selectedProducts.add(actualItem)
+                } else {
+                    if (index != -1)
+                        mAdapter.selectedProducts[index] = actualItem
                 }
 
                 confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
@@ -93,20 +98,27 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
                 val position = binding.rvOrderLineList.getChildAdapterPosition(view)
                 val item = mAdapter.items[position] as CustomProductQtyEntity
                 var index = -1
+                var isFinded = false
 
                 mAdapter.selectedProducts.forEachIndexed { indx, it ->
                     if (it.idProduct == item.idProduct) {
+                        isFinded = true
                         item.quantity = --it.quantity
-                        if (item.quantity > 0f)
-                            mAdapter.selectedProducts[indx] = item
-                        else {
-                            index = indx
-                        }
+                        index = indx
                     }
-
-                    if (index != -1)
-                        mAdapter.selectedProducts.removeAt(index)
                 }
+
+                if (isFinded) {
+                    if (item.quantity > 0f)
+                        mAdapter.selectedProducts[index] = item
+                    else {
+                        mAdapter.selectedProducts.removeAt(index)
+                    }
+                }
+
+                /*if (index != -1)
+                    mAdapter.selectedProducts.removeAt(index)*/
+
                 mAdapter.updateProductRowItem(position, item)
                 confirmItem.isEnabled = mAdapter.selectedProducts.isNotEmpty()
             }
@@ -156,20 +168,24 @@ class OrderLineListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
             if (currentQty != qty && qty >= 0f) {
                 item.quantity = qty
                 var index = -1
+                var isFinded = false
                 mAdapter.updateProductRowItem(position, item)
+
                 if (mAdapter.selectedProducts.isEmpty())
                     mAdapter.selectedProducts.add(item)
                 else
                     mAdapter.selectedProducts.forEachIndexed { indx, it ->
                         if (it.idProduct == item.idProduct) {
-                            mAdapter.selectedProducts[indx] = item
-                        }else{
+                            isFinded = !isFinded
                             index = indx
                         }
                     }
 
-                if (index != -1)
+                if (isFinded) {
+                    mAdapter.selectedProducts[index] = item
+                } else {
                     mAdapter.selectedProducts.add(item)
+                }
 
                 Toast.makeText(this, getString(R.string.qty_updated), Toast.LENGTH_SHORT).show()
                 dialog.dismiss()

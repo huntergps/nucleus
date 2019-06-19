@@ -17,10 +17,8 @@ class AddProductDataAdapter(
         val listenerShort: OnViewShortClickListener,
         val listenerLong: OnViewLongClickListener
 ) : RecyclerBaseAdapter(items, recyclerView) {
-
     private val selectedProductList = ArrayList<CustomProductQtyEntity>()
     val selectedProducts = ArrayList<CustomProductQtyEntity>()
-
 
     companion object {
         const val TAG: String = "AddProductDataAdapter"

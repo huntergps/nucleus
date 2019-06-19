@@ -449,4 +449,5 @@
     <string name="loading" tools:override="true">Cargando</string>
     <string name="attendees">Asistentes</string>
     <string name="responsible_activity">Responsable: </string>
+    <string name="applying_changes">Aplicando cambios</string>
 </resources>

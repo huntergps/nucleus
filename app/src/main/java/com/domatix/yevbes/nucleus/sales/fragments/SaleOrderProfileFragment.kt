@@ -1,6 +1,5 @@
 package com.domatix.yevbes.nucleus.sales.fragments
 
-
 import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -11,9 +10,12 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.widget.Toast
+import com.airbnb.lottie.LottieDrawable
 import com.domatix.yevbes.nucleus.*
 import com.domatix.yevbes.nucleus.core.Odoo
 import com.domatix.yevbes.nucleus.databinding.FragmentSaleOrderProfileBinding
+import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogStartListener
+import com.domatix.yevbes.nucleus.generic.ui.dialogs.CustomDialogFragment
 import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.SaleOrderLineDataAdapter
 import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
@@ -67,11 +69,12 @@ class SaleOrderProfileFragment : Fragment() {
     private var saleOrderId: Int? = null
     private var isSaleOrderModified = false
 
+    private lateinit var dialogFragment: CustomDialogFragment
+
     lateinit var compositeDisposable: CompositeDisposable private set
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
     lateinit var activity: SaleDetailActivity private set
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +98,16 @@ class SaleOrderProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         activity = getActivity() as SaleDetailActivity
         activity.title = getString(R.string.sale_name_title, saleOrder.name)
+
+
+        dialogFragment = CustomDialogFragment.newInstance(
+                activity,
+                fragmentManager!!,
+                showInstantly = false,
+                playAnimation = true,
+                loopAnimation = true,
+                repeatCount = LottieDrawable.INFINITE,
+                cancelable = false)
 
         activity.binding.abl.visibility = View.GONE
         activity.binding.nsv.visibility = View.GONE
@@ -122,7 +135,7 @@ class SaleOrderProfileFragment : Fragment() {
 
         saleOrder.partnerId.asJsonArray?.let { partnerId ->
             val id = partnerId.asJsonArray[0].asInt
-            binding.partnerId.setTextColor(ContextCompat.getColor(activity,R.color.colorAccent))
+            binding.partnerId.setTextColor(ContextCompat.getColor(activity, R.color.colorAccent))
             binding.partnerId.setOnClickListener(modelDetailsListener(id, activity, binding.partnerId, "res.partner"))
         }
     }
@@ -169,6 +182,16 @@ class SaleOrderProfileFragment : Fragment() {
                 }
 
                 R.id.action_confirm -> {
+                    dialogFragment.showDialog()
+                    dialogFragment.setOnDialogStartListener(object : OnDialogStartListener {
+                        override fun onDialogStarted() {
+                            dialogFragment.setTilte(getString(R.string.applying_changes))
+                            dialogFragment.setMessage(String.format(resources.getString(R.string.applying_changes_sale_order_dialog_title)))
+                            dialogFragment.setCancelableDialog(false)
+                            dialogFragment.setAnimation("loading.json", true, loop = true)
+                        }
+                    })
+
                     Odoo.callKw("sale.order", "action_confirm", listOf(saleOrderId!!)) {
                         onSubscribe { disposable ->
                             compositeDisposable.add(disposable)
@@ -176,6 +199,7 @@ class SaleOrderProfileFragment : Fragment() {
 
                         onError { error ->
                             error.printStackTrace()
+                            dialogFragment.dismissDialog()
                         }
 
                         onComplete {
@@ -191,7 +215,7 @@ class SaleOrderProfileFragment : Fragment() {
                             mOptionMenu.findItem(R.id.action_confirm)?.isCheckable = false
 
                             binding.state.text = saleStates("done")
-
+                            dialogFragment.dismissDialog()
                         }
 
                     }
