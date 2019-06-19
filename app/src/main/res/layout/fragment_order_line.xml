@@ -123,6 +123,9 @@
             android:scrollbars="vertical"
             app:hintAnimationEnabled="false"
             app:hintEnabled="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             app:layout_constraintEnd_toEndOf="@+id/textQuantityContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textQuantityContainer">
@@ -132,7 +135,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/unit_price"
-                android:inputType="numberSigned|numberDecimal"
+                android:inputType="none|numberDecimal"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:maxLines="1"
                 android:scrollbars="vertical"
                 android:textSize="12sp" />

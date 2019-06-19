@@ -509,83 +509,9 @@ class AddSaleFragment : Fragment() {
                                     }
                                 })
                             } else {
-                                getUnitPrice(idPriceList!!, addedList[index].idProduct, addedList[index].quantity, object : OnThreadFinishedListener {
-                                    override fun onThreadFinished(value: Any) {
-                                        val price = value as Float
-                                        val jsonArray = JsonArray()
-                                        jsonArray.add(addedList[index].idProduct)
-                                        jsonArray.add(addedList[index].name)
-
-                                        auxSaleOrderLineList.add(SaleOrderLine(
-                                                0,
-                                                addedList[index].name,
-                                                jsonArray,
-                                                addedList[index].quantity,
-                                                0f,
-                                                addedList[index].lstPrice,
-                                                price,
-                                                addedList[index].lstPrice * addedList[index].quantity,
-                                                addedList[index].taxesId
-                                        ))
-
-                                        selectedOrderLines.addAll(auxSaleOrderLineList)
-                                        adapterSelectedListOrderLineDataAdapter.addRowItems(auxSaleOrderLineList)
-                                    }
-                                })
+                                // TODO: implement get price without discount
                             }
                         }
-                        /*     val selectedItemsJSONString = data?.getStringExtra(SELECTED_LIST)
-                             val selectedItemsGson = Gson()
-
-                             val auxSaleOrderLineList = ArrayList<SaleOrderLine>()
-                             val auxProductProductList: ArrayList<ProductProduct>
-
-                             if (!::selectedOrderLines.isInitialized)
-                                 selectedOrderLines = ArrayList()
-
-                             auxProductProductList = selectedItemsGson.fromJson(selectedItemsJSONString, object : TypeToken<java.util.ArrayList<ProductProduct>>() {
-                             }.type)
-
-                             for (index in 0 until auxProductProductList.size){
-                                 getUnitPrice(idPriceList!!,auxProductProductList[index].id,auxProductProductList[index].quantity, object : GetTarifaInterface {
-                                     override fun getTarifa(tarifa: Float) {
-                                         val jsonArray = JsonArray()
-                                         jsonArray.add(auxProductProductList[index].id)
-                                         jsonArray.add(auxProductProductList[index].name)
-
-                                         *//*auxSaleOrderLineList.add(SaleOrderLine(
-                                            0,
-                                            auxProductProductList[index].name,
-                                            jsonArray,
-                                            auxProductProductList[index].quantity,
-                                            0f,
-                                            auxProductProductList[index].lstPrice,
-                                            0f
-                                            ,
-                                            auxProductProductList[index].lstPrice * auxProductProductList[index].quantity,
-                                            auxProductProductList[index].taxesId
-                                    ))*//*
-
-                                    val saleOrderLine = SaleOrderLine(
-                                            0,
-                                            auxProductProductList[index].name,
-                                            jsonArray,
-                                            auxProductProductList[index].quantity,
-                                            0f,
-                                            auxProductProductList[index].lstPrice,
-                                            tarifa
-                                            ,
-                                            auxProductProductList[index].lstPrice * auxProductProductList[index].quantity,
-                                            auxProductProductList[index].taxesId
-                                    )
-                                    selectedOrderLines.add(saleOrderLine)
-//                                    selectedOrderLines.addAll(auxSaleOrderLineList)
-                                    adapterSelectedListOrderLineDataAdapter.addRowItem(saleOrderLine)
-//                                    adapterSelectedListOrderLineDataAdapter.addRowItems(auxSaleOrderLineList)
-//                                    adapterSelectedListOrderLineDataAdapter.notifyDataSetChanged()
-                                }
-                            })
-                        }*/
                     }
 
                     Activity.RESULT_CANCELED -> {
