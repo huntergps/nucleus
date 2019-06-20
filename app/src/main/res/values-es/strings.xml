@@ -298,7 +298,7 @@
     <string name="remove_sale_order_line">Eliminar línea del pedido</string>
     <string name="select_action">Selecciona la acción</string>
     <string name="adding_sale_order_dialog_title">Añadiendo pedido de venta</string>
-    <string name="please_wait_dialog_message">Por favor espera…</string>
+    <string name="please_wait_dialog_message">Por favor espera …</string>
     <string name="applying_changes_sale_order_dialog_title">Aplicando cambios al pedido de venta.</string>
     <string name="action_filter_budgets">Presupuestos</string>
     <string name="action_filter_budgets_sent">Presupuestos enviados</string>

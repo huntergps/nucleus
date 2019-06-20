@@ -63,6 +63,11 @@ data class ProductProduct(
         @SerializedName("uom_id")
         val uomId: JsonArray,
 
+        @Expose
+        @SerializedName("pricelist_item_ids")
+        val pricelistItemIds: JsonElement,
+
+
         var quantity: Float = 0f,
         var checked: Boolean = false
 ) {

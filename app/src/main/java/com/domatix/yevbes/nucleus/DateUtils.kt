@@ -1,11 +1,21 @@
 package com.domatix.yevbes.nucleus
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 object DateUtils {
 
     /** The maximum date possible.  */
     var MAX_DATE = Date(java.lang.Long.MAX_VALUE)
+
+    val today = Calendar.getInstance()
+    val todayOdooFormatted = SimpleDateFormat("yyyy-M-dd").format(Date())
+
+
+    fun getOdooFormattedDay(date: Date): String? {
+        return SimpleDateFormat("yyyy-M-dd").format(date)
+    }
+
 
     /**
      *

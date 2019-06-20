@@ -27,16 +27,14 @@ import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterIt
 import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogButtonsClickListener
 import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogStartListener
 import com.domatix.yevbes.nucleus.generic.ui.dialogs.CustomDialogFragment
+import com.domatix.yevbes.nucleus.products.entities.ProductProduct
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
 import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
 import com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity
 import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
 import com.domatix.yevbes.nucleus.sales.adapters.OrderEditAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
-import com.domatix.yevbes.nucleus.sales.entities.CustomProductQtyEntity
-import com.domatix.yevbes.nucleus.sales.entities.ProductPricelist
-import com.domatix.yevbes.nucleus.sales.entities.SaleOrder
-import com.domatix.yevbes.nucleus.sales.entities.SaleOrderLine
+import com.domatix.yevbes.nucleus.sales.entities.*
 import com.domatix.yevbes.nucleus.utils.MyProgressDialog
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -238,8 +236,43 @@ class OrderEditFragment : Fragment() {
         binding.saleOrderLineRecyclerView.adapter = mAdapter
 
         binding.buttonAddOrderSalesLine.setOnClickListener {
-            val intent = Intent(activity, OrderLineListActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE)
+            if (!::isPricelistWithDiscount.isLateinit)  {
+                val intent = Intent(activity, OrderLineListActivity::class.java)
+                startActivityForResult(intent, REQUEST_CODE)
+            } else {
+
+                val dialogFragment = CustomDialogFragment.newInstance(
+                        activity,
+                        fragmentManager!!,
+                        title = getString(R.string.loading),
+                        message = getString(R.string.please_wait_dialog_message),
+                        showInstantly = true,
+                        playAnimation = true,
+                        loopAnimation = true,
+                        animation = "error.json",
+                        repeatCount = LottieDrawable.INFINITE,
+                        cancelable = false,
+                        visibleButtons = true)
+                dialogFragment.setOnDialogStartListener(object : OnDialogStartListener {
+                    override fun onDialogStarted() {
+                        dialogFragment.setButtonsText("Cancel","Retry")
+                        dialogFragment.setOnDialogButtonsClickListener(object : OnDialogButtonsClickListener{
+                            override fun onPositiveButtonPressed() {
+                                checkForDiscountPolicy(saleOrder!!.pricelistId.asJsonArray[0].asInt)
+
+                            }
+
+                            override fun onNegativeButtonPressed() {
+
+                            }
+
+                        })
+                    }
+                })
+
+
+            }
+
         }
 
         binding.priceList.setOnClickListener {
@@ -271,6 +304,183 @@ class OrderEditFragment : Fragment() {
         compositeDisposable.dispose()
     }
 
+
+
+    /*
+    ############################################################################################
+    ############################################################################################
+    ############################################################################################
+    ############################################################################################
+     */
+    private fun getDiscountUnitPrice(pricelistId: Int, productId: Int, quantity: Float, listener: OnThreadFinishedListener){
+        var unifiedPrice: Float? = 0f
+        var pricelist_item_ids: ArrayList<ProductPricelistItem> = arrayListOf()
+        var pricelist_item_id: ProductPricelistItem? = null // selected pricelist_item_id
+        val todayOdooFormatted = DateUtils.todayOdooFormatted
+        var pricelistItemProduct_id: ProductProduct? = null
+        var product_id: ProductProduct? = null
+
+
+        Odoo.searchRead(
+                model = "product.product",
+                fields = ProductProduct.fields,
+                domain = listOf(listOf("id", "=", productId))
+        ){
+            onSubscribe { disposable ->
+                compositeDisposable.add(disposable)
+            }
+
+            onNext { response ->
+                if (response.isSuccessful) {
+                    val searchRead = response.body()!!
+                    if (searchRead.isSuccessful) {
+                        val result = searchRead.result
+                        product_id = gson.fromJson<ArrayList<ProductProduct>>(result.records, object : TypeToken<ArrayList<ProductProduct>>() {}.type)[0]
+
+                        /*
+                        ############################################################
+                        ############################################################
+                        ############################################################
+                        ############################################################
+                         */
+
+                        Odoo.searchRead(
+                                model = "product.pricelist.item",
+                                fields = ProductPricelistItem.fields,
+                                domain = listOf(
+                                        listOf("pricelist_id", '=', pricelistId),
+
+                                        //check the pricelist's initial day is atleast today or null
+                                        "|",
+                                        listOf("date_start", ">=", todayOdooFormatted),
+                                        listOf("date_start", ">=", null),
+
+
+                                        //check the pricelist's final day is some days before today or null
+                                        "|",
+                                        listOf("date_end", "<=", todayOdooFormatted),
+                                        listOf("date_end", "<=", null),
+
+
+                                        listOf("min_quantity", "<=", quantity)
+                                ),
+                                sort = "id ASC"
+                        ){
+                            onSubscribe { disposable ->
+                                compositeDisposable.add(disposable)
+                            }
+
+                            onNext { response ->
+                                if (response.isSuccessful) {
+                                    val searchRead = response.body()!!
+                                    if (searchRead.isSuccessful) {
+                                        val result = searchRead.result
+                                        // use gson to convert records (jsonArray) to list of pojo
+                                        pricelist_item_ids = gson.fromJson(result.records, object : TypeToken<ArrayList<ProductPricelistItem>>() {}.type)
+                                        /*
+                                        if (!pricelist_item_ids.isEmpty())
+                                            pricelist_item_id = checkPricelistItemHits(pricelist_item_ids)
+                                        */
+                                    } else {
+                                        // Odoo specific error
+                                        Timber.w("searchRead() failed with ${searchRead.errorMessage}")
+                                    }
+                                } else {
+                                    Timber.w("request failed with ${response.code()}:${response.message()}")
+                                }
+                            }
+
+                            onError { error ->
+                                error.printStackTrace()
+                            }
+
+                            onComplete { }
+                        }
+
+
+                        /*
+                        ############################################################
+                        ############################################################
+                        ############################################################
+                        ############################################################
+                         */
+
+
+                    } else {
+                        // Odoo specific error
+                        Timber.w("searchRead() failed with ${searchRead.errorMessage}")
+                    }
+                } else {
+                    Timber.w("request failed with ${response.code()}:${response.message()}")
+                }
+            }
+
+            onError { error ->
+                error.printStackTrace()
+            }
+
+            onComplete { }
+
+        }
+
+        /*
+        1. given a pricelistId, get its pricelistItemIds
+        2. check applicability hits. if hits > 1, get last item with greater id.
+
+        fun productIsApplicableForPricelist()
+            check if applicable
+            check if qty
+            check if date
+            compute price
+
+        3. create SaleOrderLine with price and discount
+        */
+    }
+
+
+
+    /*
+
+
+    private fun checkPricelistItemHits(item_ids: ArrayList<ProductPricelistItem>): ProductPricelistItem {
+
+        var selected_items: ArrayList<ProductPricelistItem> = arrayListOf()
+        for (item: ProductPricelistItem in item_ids){
+            when(item.appliedOn){
+                "3_global" -> {
+                    selected_items.add(item)
+                }
+                "2_product_category" -> {
+                    if(checkCategory(productCategory, itemCategory) and checkQty(productQty, itemQty)
+                        selected_items.add(item)
+                }
+
+                "1_product" -> {
+                    //check product_tmpl_id == product_id.product_tmpl_id
+                }
+
+                "0_product_variant" -> {
+                    //check if product_id == product_id
+                }
+
+                else -> {
+
+                }
+            }
+        }
+
+        return selected_items[0]
+    }
+
+    */
+/*
+############################################################################################
+############################################################################################
+############################################################################################
+ */
+
+
+    
     private fun getUnitPrice(tarifId: Int, productId: Int, quantity: Float, listener: OnThreadFinishedListener) {
         var priceWithTarifa: Float? = 0f
         Odoo.callKw(model = "product.pricelist", method = "price_get", args = listOf(tarifId,
@@ -387,6 +597,16 @@ class OrderEditFragment : Fragment() {
                                 })
                             } else {
                                 // TODO: implement get price without discount
+                                getUnfiedUnitPrice(idPriceList!!, addedList[index].idProduct, addedList[index].quantity, object : OnThreadFinishedListener {
+                                    override fun onThreadFinished(value: Any) {
+                                        val values = value as ArrayList<Float>
+                                        /*auxSaleOrderLineList.add(SaleOrderLine(
+                                                id = 0,
+                                                priceUnit = values[0],
+                                                discount = values[1]
+                                        ))*/
+                                    }
+                                })
                             }
                         }
                     }
@@ -725,7 +945,6 @@ class OrderEditFragment : Fragment() {
     }
 
     private fun addOrderLinesToDB(orderId: Int, addedItems: ArrayList<SaleOrderLine>, index: Int) {
-
         val item = addedItems[index]
         Odoo.create(model = "sale.order.line", values = mapOf(
                 "order_id" to orderId,
@@ -898,4 +1117,5 @@ class OrderEditFragment : Fragment() {
         }
     }
 }
+
 
