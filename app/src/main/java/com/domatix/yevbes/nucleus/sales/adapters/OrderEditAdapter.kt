@@ -13,35 +13,57 @@ class OrderEditAdapter(
         items: ArrayList<Any>,
         private val listener: OnShortLongAdapterItemClickListener
 ) : RecyclerBaseAdapter(items, recyclerView) {
+    companion object {
+        const val TAG: String = "OrderEditAdapter"
+        private const val VIEW_TYPE_ITEM = 0
+    }
+
     private val saleOrderLineRowItems: ArrayList<SaleOrderLine> = ArrayList()
 
     val rowItemCount: Int get() = saleOrderLineRowItems.size
 
+    override fun getItemViewType(position: Int): Int {
+        val o = items[position]
+        if (o is SaleOrderLine) {
+            return VIEW_TYPE_ITEM
+        }
+        return super.getItemViewType(position)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        var binding = SaleOrderLineRowBinding.inflate(
-                inflater,
-                parent,
-                false
-        )
-        binding.root.setOnClickListener { view ->
-            listener.onShortAdapterItemPressed(view)
+        when (viewType) {
+            VIEW_TYPE_ITEM -> {
+                var binding = SaleOrderLineRowBinding.inflate(
+                        inflater,
+                        parent,
+                        false
+                )
+                binding.root.setOnClickListener { view ->
+                    listener.onShortAdapterItemPressed(view)
+                }
+                binding.root.setOnLongClickListener { view ->
+                    listener.onLongAdapterItemPressed(view)
+                    return@setOnLongClickListener true
+                }
+                return OrderEditViewHolder(binding)
+            }
         }
-        binding.root.setOnLongClickListener { view ->
-            listener.onLongAdapterItemPressed(view)
-            return@setOnLongClickListener true
-        }
-
-        return OrderEditViewHolder(binding)
+        return super.onCreateViewHolder(parent, viewType)
     }
 
     override fun onBindViewHolder(baseHolder: RecyclerView.ViewHolder, basePosition: Int) {
         super.onBindViewHolder(baseHolder, basePosition)
         val position = baseHolder.adapterPosition
-        val holder = baseHolder as OrderEditViewHolder
-        val item = items[position] as SaleOrderLine
-        val binding = holder.binding
-        binding.saleOrderLine = item
+
+        when (getItemViewType(basePosition)) {
+            VIEW_TYPE_ITEM -> {
+                val holder = baseHolder as OrderEditViewHolder
+                val item = items[position] as SaleOrderLine
+                val binding = holder.binding
+                binding.saleOrderLine = item
+            }
+        }
     }
 
     fun addSaleOrderLineRowItems(saleOrderLineRowItems: ArrayList<SaleOrderLine>) {

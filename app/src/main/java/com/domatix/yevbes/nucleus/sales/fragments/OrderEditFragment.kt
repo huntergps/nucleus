@@ -620,7 +620,7 @@ class OrderEditFragment : Fragment() {
             R.id.action_confirm -> {
                 if (removedItemsIdList.isNotEmpty()) {
                     myProgressDialog = MyProgressDialog(progressDialog, getString(R.string.applying_changes_sale_order_dialog_title), getString(R.string.please_wait_dialog_message))
-//                    unlinkSaleOrderLines(removedItemsIdList)
+                    unlinkSaleOrderLines(removedItemsIdList)
                 } else {
                     myProgressDialog = MyProgressDialog(progressDialog, getString(R.string.applying_changes_sale_order_dialog_title), getString(R.string.please_wait_dialog_message))
                     modifyOrder(saleOrder!!.id, partnerInvoiceId!!, partnerShippingId!!, idCustomer!!, binding.terms.text.toString())
@@ -644,11 +644,11 @@ class OrderEditFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun unlinkSaleOrderLines(ids: ArrayList<Int>) {
+    private fun unlinkSaleOrderLines(ids: HashSet<Int>) {
         if (::myProgressDialog.isInitialized)
             myProgressDialog.setProgressToProgressDialog(10)
 
-        Odoo.unlink(model = "sale.order.line", ids = ids) {
+        Odoo.unlink(model = "sale.order.line", ids = ids.toList()) {
             onSubscribe { disposable ->
                 compositeDisposable.add(disposable)
             }
@@ -712,7 +712,9 @@ class OrderEditFragment : Fragment() {
                 else {
                     if (::myProgressDialog.isInitialized)
                         myProgressDialog.setProgressToProgressDialog(60)
-                    modifyOrderLinesInDB(selectedSaleOrderLineItems, 0)
+
+                    if (!selectedSaleOrderLineItems.isEmpty())
+                        modifyOrderLinesInDB(selectedSaleOrderLineItems, 0)
                 }
 
             }
@@ -722,7 +724,6 @@ class OrderEditFragment : Fragment() {
     }
 
     private fun addOrderLinesToDB(orderId: Int, addedItems: ArrayList<SaleOrderLine>, index: Int) {
-
         val item = addedItems[index]
         Odoo.create(model = "sale.order.line", values = mapOf(
                 "order_id" to orderId,
