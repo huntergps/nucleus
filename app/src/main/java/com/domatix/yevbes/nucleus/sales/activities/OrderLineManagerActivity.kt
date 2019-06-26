@@ -23,7 +23,6 @@ import com.google.gson.JsonArray
 import com.google.gson.reflect.TypeToken
 import com.rd.PageIndicatorView
 
-
 class OrderLineManagerActivity : AppCompatActivity(), FragmentToActivityListener {
     companion object {
         const val SELECTED_LIST = "SalesManagerSelectedList"

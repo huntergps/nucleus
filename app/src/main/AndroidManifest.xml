@@ -27,6 +27,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+
+        <activity
+            android:name=".sales.activities.OrderLinesManagerActivity"
+            android:label="@string/order_line_manager_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".generic.detailCards.SaleDetailActivity"
             android:screenOrientation="portrait"

@@ -26,10 +26,7 @@ import com.domatix.yevbes.nucleus.generic.callbacs.adapters.OnShortLongAdapterIt
 import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogButtonsClickListener
 import com.domatix.yevbes.nucleus.generic.callbacs.dialogs.OnDialogStartListener
 import com.domatix.yevbes.nucleus.generic.ui.dialogs.CustomDialogFragment
-import com.domatix.yevbes.nucleus.sales.activities.OrderLineListActivity
-import com.domatix.yevbes.nucleus.sales.activities.OrderLineManagerActivity
-import com.domatix.yevbes.nucleus.sales.activities.PricelistListActivity
-import com.domatix.yevbes.nucleus.sales.activities.SaleDetailActivity
+import com.domatix.yevbes.nucleus.sales.activities.*
 import com.domatix.yevbes.nucleus.sales.adapters.OrderEditAdapter
 import com.domatix.yevbes.nucleus.sales.customer.CustomerListActivity
 import com.domatix.yevbes.nucleus.sales.entities.CustomProductQtyEntity
@@ -118,7 +115,7 @@ class OrderEditFragment : Fragment() {
     private val mAdapter: OrderEditAdapter by lazy {
         OrderEditAdapter(binding.saleOrderLineRecyclerView, arrayListOf(), object : OnShortLongAdapterItemClickListener {
             override fun onShortAdapterItemPressed(view: View) {
-                val position = binding.saleOrderLineRecyclerView.getChildAdapterPosition(view)
+               /* val position = binding.saleOrderLineRecyclerView.getChildAdapterPosition(view)
                 val intent = Intent(activity, OrderLineManagerActivity::class.java)
                 val bundle = Bundle()
 
@@ -128,6 +125,21 @@ class OrderEditFragment : Fragment() {
 
                 bundle.putString(OrderLineManagerActivity.SELECTED_LIST, gson.toJson(aux))
                 bundle.putInt(OrderLineManagerActivity.SELECTED_LIST_POSITION, position)
+                intent.putExtras(bundle)
+
+                startActivityForResult(intent, SALES_MANAGER_REQUEST_CODE)
+                Timber.v("ITEM_CLICKED_$position")*/
+
+                val position = binding.saleOrderLineRecyclerView.getChildAdapterPosition(view)
+                val intent = Intent(activity, OrderLinesManagerActivity::class.java)
+                val bundle = Bundle()
+
+                val aux = ArrayList<SaleOrderLine>()
+                aux.addAll(mAdapter.items as ArrayList<SaleOrderLine>)
+//                aux.addAll(addedItems)
+
+                bundle.putString(OrderLinesManagerActivity.SELECTED_LIST, gson.toJson(aux))
+                bundle.putInt(OrderLinesManagerActivity.SELECTED_LIST_POSITION, position)
                 intent.putExtras(bundle)
 
                 startActivityForResult(intent, SALES_MANAGER_REQUEST_CODE)
